@@ -27,7 +27,7 @@ export default function ContactPage() {
       icon: MapPin,
       titleVi: "Địa chỉ",
       titleEn: "Address",
-      content: "123 Gaming Street, Tech District, District 1, Ho Chi Minh City, Vietnam",
+      content: "Số 777, Đường Nguyễn Thiện Thuật, Phường Mỹ Hào, Tỉnh Hưng Yên, Việt Nam",
     },
     {
       icon: Mail,
@@ -39,7 +39,7 @@ export default function ContactPage() {
       icon: Phone,
       titleVi: "Điện thoại",
       titleEn: "Phone",
-      content: "+84 28 1234 5678",
+      content: "+84 22 1557 9999",
     },
     {
       icon: Clock,

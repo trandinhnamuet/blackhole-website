@@ -77,7 +77,7 @@ export function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <span>123 Gaming Street, Tech District, Ho Chi Minh City, Vietnam</span>
+                <span>Số 777, Đường Nguyễn Thiện Thuật, Phường Mỹ Hào, Tỉnh Hưng Yên, Việt Nam</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Mail className="h-5 w-5 text-primary shrink-0" />
@@ -85,7 +85,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Phone className="h-5 w-5 text-primary shrink-0" />
-                <span>+84 28 1234 5678</span>
+                <span>+84 22 1557 9999</span>
               </li>
             </ul>
           </div>
