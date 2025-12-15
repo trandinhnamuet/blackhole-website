@@ -42,36 +42,9 @@ const games = [
   },
   
   {
-    id: "b-tlbb",
-    title: "B-TLBB Mobile",
-    titleEn: "B-TLBB Mobile",
-    subtitle: "Action RPG",
-    subtitleEn: "Action RPG",
-    description:
-      "Game nhập vai hành động sắp ra mắt với đồ họa tuyệt đẹp, gameplay hấp dẫn và hệ thống chiến đấu độc đáo.",
-    descriptionEn:
-      "Upcoming action RPG with stunning graphics, engaging gameplay and unique combat system.",
-    image: "/images/vhtk2/b-tlbb-mobile.png",
-    screenshots: [
-      "/images/vhtk2/b-tlbb-mobile.png",
-    ],
-    status: "coming",
-    rating: 0,
-    players: "0",
-    downloads: "0",
-    platforms: ["android", "ios"],
-    features: [
-      { vi: "Hành động sôi động", en: "Dynamic Action" },
-      { vi: "Đồ họa HD", en: "HD Graphics" },
-      { vi: "Câu chuyện hấp dẫn", en: "Compelling Story" },
-      { vi: "Nhiều quái vật", en: "Various Bosses" },
-    ],
-    technologies: ["Unity 3D", "C#"],
-  },
-  {
-    id: "b-ktvs",
-    title: "B-KTVS Mobile",
-    titleEn: "B-KTVS Mobile",
+    id: "Kiếm Thần Vô Song",
+    title: "Kiếm Thần Vô Song Mobile",
+    titleEn: "Kiếm Thần Vô Song Mobile",
     subtitle: "Strategy Game",
     subtitleEn: "Strategy Game",
     description:
@@ -96,18 +69,18 @@ const games = [
     technologies: ["Unreal Engine", "C++"],
   },
   {
-    id: "b-kttk",
-    title: "B-KTTK Mobile",
-    titleEn: "B-KTTK Mobile",
+    id: "Kiếm Hiệp Thế Giới",
+    title: "Kiếm Hiệp Thế Giới Mobile",
+    titleEn: "Kiếm Hiệp Thế Giới Mobile",
     subtitle: "Character RPG",
     subtitleEn: "Character RPG",
     description:
       "Game nhân vật sắp ra mắt với các nhân vật độc đáo, kỹ năng đa dạng và câu chuyện hấp dẫn.",
     descriptionEn:
       "Upcoming character RPG with unique heroes, diverse skills and compelling storylines.",
-    image: "/images/vhtk2/b-kt-mobile.png",
+    image: "/images/vhtk2/khtg.png",
     screenshots: [
-      "/images/vhtk2/b-kt-mobile.png",
+      "/images/vhtk2/khtg.png",
     ],
     status: "coming",
     rating: 0,
@@ -119,6 +92,33 @@ const games = [
       { vi: "Kỹ năng đa dạng", en: "Diverse Skills" },
       { vi: "Phát triển nhân vật", en: "Character Growth" },
       { vi: "Câu chuyện chi tiết", en: "Detailed Storyline" },
+    ],
+    technologies: ["Unity 3D", "C#"],
+  },
+  {
+    id: "b-tlbb",
+    title: "B-TLBB Mobile",
+    titleEn: "B-TLBB Mobile",
+    subtitle: "Action RPG",
+    subtitleEn: "Action RPG",
+    description:
+      "Game nhập vai hành động sắp ra mắt với đồ họa tuyệt đẹp, gameplay hấp dẫn và hệ thống chiến đấu độc đáo.",
+    descriptionEn:
+      "Upcoming action RPG with stunning graphics, engaging gameplay and unique combat system.",
+    image: "/images/vhtk2/b-tlbb-mobile.png",
+    screenshots: [
+      "/images/vhtk2/b-tlbb-mobile.png",
+    ],
+    status: "coming",
+    rating: 0,
+    players: "0",
+    downloads: "0",
+    platforms: ["android", "ios"],
+    features: [
+      { vi: "Hành động sôi động", en: "Dynamic Action" },
+      { vi: "Đồ họa HD", en: "HD Graphics" },
+      { vi: "Câu chuyện hấp dẫn", en: "Compelling Story" },
+      { vi: "Nhiều quái vật", en: "Various Bosses" },
     ],
     technologies: ["Unity 3D", "C#"],
   },
