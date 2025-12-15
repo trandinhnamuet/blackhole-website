@@ -33,11 +33,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon-light-32x32.png", media: "(prefers-color-scheme: light)" },
-      { url: "/icon-dark-32x32.png", media: "(prefers-color-scheme: dark)" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
-    apple: "/apple-icon.png",
+    { url: "/logo-reference2.png" },
+  ],
+    apple: "/logo-reference2.png",
   },
     generator: 'v0.app'
 }

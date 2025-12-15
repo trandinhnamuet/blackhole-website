@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,34 +11,47 @@ import { useLocale } from "@/lib/locale-context"
 
 const games = [
   {
-    id: 1,
-    title: "Tiêu Dao Giang Hồ",
-    titleEn: "Xiaoyao Jianghu",
+    id: "vhtk2",
+    title: "Võ Hiệp Truyền Kỳ 2",
+    titleEn: "Martial Arts Legend 2",
     description: "MMORPG võ hiệp đỉnh cao với thế giới mở rộng lớn, hệ thống chiến đấu đa dạng và cốt truyện hấp dẫn.",
     descriptionEn: "Ultimate martial arts MMORPG with vast open world, diverse combat system and engaging storyline.",
-    image: "/images/c-e1-ba-a3nh-209.png",
+    image: "/images/vhtk2/vhtk_banner.jpg",
+    video: "/images/vhtk2/vhtk.mp4",
     status: "live",
     rating: 4.8,
     players: "5M+",
   },
+  
   {
-    id: 2,
-    title: "Băng Hỏa Kỳ Duyên",
-    titleEn: "Ice Fire Legends",
-    description: "Thế giới băng giá và lửa cháy giao thoa, nơi các anh hùng viết nên những huyền thoại bất tử.",
-    descriptionEn: "A world where ice and fire intertwine, where heroes write immortal legends.",
-    image: "/images/c-e1-ba-a3nh-206.png",
-    status: "live",
-    rating: 4.7,
-    players: "3M+",
+    id: "b-tlbb",
+    title: "B-TLBB Mobile",
+    titleEn: "B-TLBB Mobile",
+    description: "Game nhập vai hành động sắp ra mắt với đồ họa tuyệt đẹp và gameplay hấp dẫn.",
+    descriptionEn: "Upcoming action RPG with stunning graphics and engaging gameplay.",
+    image: "/images/vhtk2/b-tlbb-mobile.png",
+    status: "coming",
+    rating: 0,
+    players: "0",
   },
   {
-    id: 3,
-    title: "Sa Mạc Huyền Bí",
-    titleEn: "Desert Mysteries",
-    description: "Khám phá những bí ẩn cổ đại trong sa mạc hoang vu, nơi kho báu và hiểm nguy song hành.",
-    descriptionEn: "Explore ancient mysteries in the vast desert, where treasures and dangers coexist.",
-    image: "/images/c-e1-ba-a3nh-207.png",
+    id: "b-ktvs",
+    title: "B-KTVS Mobile",
+    titleEn: "B-KTVS Mobile",
+    description: "Game chiến thuật sắp ra mắt với hệ thống quân đội độc đáo và chiến đấu chiến lược.",
+    descriptionEn: "Upcoming strategy game with unique army system and strategic combat.",
+    image: "/images/vhtk2/b-ktvs-mobile.png",
+    status: "coming",
+    rating: 0,
+    players: "0",
+  },
+  {
+    id: "b-kttk",
+    title: "B-KTTK Mobile",
+    titleEn: "B-KTTK Mobile",
+    description: "Game nhân vật sắp ra mắt với các nhân vật độc đáo và câu chuyện hấp dẫn.",
+    descriptionEn: "Upcoming character game with unique heroes and compelling storylines.",
+    image: "/images/vhtk2/b-kt-mobile.png",
     status: "coming",
     rating: 0,
     players: "0",
@@ -48,6 +61,28 @@ const games = [
 export function GamesShowcase() {
   const { t, locale } = useLocale()
   const [activeGame, setActiveGame] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+
+  useEffect(() => {
+    // stop video when switching games
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause()
+        videoRef.current.currentTime = 0
+      } catch (e) {
+        // ignore
+      }
+    }
+    setIsPlaying(false)
+  }, [activeGame])
+
+  useEffect(() => {
+    if (isPlaying && videoRef.current) {
+      // attempt to play when video element is mounted
+      videoRef.current.play().catch(() => {})
+    }
+  }, [isPlaying])
 
   return (
     <section className="py-24 bg-[oklch(0.06_0.01_270)] relative overflow-hidden">
@@ -86,10 +121,46 @@ export function GamesShowcase() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
 
-            {/* Play Button */}
-            <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center border border-primary/50 hover:bg-primary/30 transition-colors group-hover:scale-110 duration-300">
-              <Play className="h-8 w-8 text-primary fill-primary" />
-            </button>
+            {/* Video for VHTK2 (always shown) or click-to-play for others */}
+            {games[activeGame].video && String(games[activeGame].id) === "vhtk2" ? (
+              <div className="absolute inset-0 z-20">
+                <video
+                  ref={videoRef}
+                  src={String(games[activeGame].video)}
+                  controls
+                  playsInline
+                  className="w-full h-full object-cover"
+                  poster={String(games[activeGame].image)}
+                  onPause={() => setIsPlaying(false)}
+                  onEnded={() => setIsPlaying(false)}
+                />
+              </div>
+            ) : games[activeGame].video && isPlaying ? (
+              <div className="absolute inset-0 z-20">
+                <video
+                  ref={videoRef}
+                  src={String(games[activeGame].video)}
+                  controls
+                  playsInline
+                  className="w-full h-full object-cover"
+                  poster={String(games[activeGame].image)}
+                  onPause={() => setIsPlaying(false)}
+                  onEnded={() => setIsPlaying(false)}
+                />
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  if (games[activeGame].video) {
+                    setIsPlaying(true)
+                    // play will be triggered by effect once mounted
+                  }
+                }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center border border-primary/50 hover:bg-primary/30 transition-colors group-hover:scale-110 duration-300"
+              >
+                <Play className="h-8 w-8 text-primary fill-primary" />
+              </button>
+            )}
 
             {/* Game Info */}
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
