@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
 
 const mockTransactions = [
   { id: "TXN20240115001", accountId: "ACC001", method: "Thẻ cào Viettel", amount: 100000, status: "success", receivedInfo: "Nhận 100,000 VNĐ - Tặng 10,000 VNĐ", timestamp: "2024-01-15 10:30:25" },
@@ -35,6 +35,9 @@ export default function TransactionsPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [hideData, setHideData] = useState(false)
+
+  const maskData = (data: string | number) => hideData ? "*".repeat(10) : data.toString()
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
