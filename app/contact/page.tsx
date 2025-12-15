@@ -195,8 +195,9 @@ export default function ContactPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-card/30">
-        <div className="container mx-auto px-4">
+      <section className="py-16 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
             {locale === "vi" ? "Câu hỏi thường gặp" : "Frequently Asked Questions"}
           </h2>

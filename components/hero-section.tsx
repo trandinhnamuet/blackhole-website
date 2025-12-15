@@ -127,20 +127,22 @@ export function HeroSection() {
           </div>
 
           {/* Stats */}
-          <div className="flex flex-wrap gap-8 mt-16 pt-8 border-t border-border/30">
-            {[
-              { value: "10M+", label: t.stats.players },
-              { value: "5+", label: t.stats.games },
-              { value: "50+", label: t.stats.countries },
-              { value: "20+", label: t.stats.awards },
-            ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[oklch(0.65_0.25_300)] to-[oklch(0.7_0.2_200)] bg-clip-text text-transparent">
-                  {stat.value}
+          <div className="mt-16 pt-8 p-6 rounded-xl bg-gradient-to-r from-card/50 to-card/30 border border-primary/20 backdrop-blur-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                { value: "10M+", label: t.stats.players },
+                { value: "5+", label: t.stats.games },
+                { value: "50+", label: t.stats.countries },
+                { value: "20+", label: t.stats.awards },
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[oklch(0.65_0.25_300)] to-[oklch(0.7_0.2_200)] bg-clip-text text-transparent">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

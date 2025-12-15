@@ -145,12 +145,13 @@ export default function NewsPage() {
       </section>
 
       {/* Featured News */}
-      <section className="py-12 bg-card/30">
-        <div className="container mx-auto px-4">
+      <section className="py-12 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-2xl font-bold mb-8">{locale === "vi" ? "Tin nổi bật" : "Featured News"}</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {featuredNews.map((news) => (
-              <Card key={news.id} className="overflow-hidden bg-card/50 border-border/50 group">
+              <Card key={news.id} className="overflow-hidden bg-gradient-to-br from-card/60 to-card/40 border-primary/20 hover:border-primary/40 group transition-all">
                 <Link href={`/news/${news.id}`}>
                   <div className="relative aspect-video overflow-hidden">
                     <Image

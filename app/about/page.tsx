@@ -126,23 +126,24 @@ export default function AboutPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="py-16 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { icon: Users, value: "200+", label: locale === "vi" ? "Nhân sự" : "Team Members" },
               { icon: Globe, value: "50+", label: locale === "vi" ? "Quốc gia" : "Countries" },
               { icon: Rocket, value: "5+", label: locale === "vi" ? "Dự án" : "Projects" },
               { icon: Award, value: "20+", label: locale === "vi" ? "Giải thưởng" : "Awards" },
             ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4">
-                  <stat.icon className="h-8 w-8 text-primary" />
+              <div key={i} className="p-6 rounded-xl bg-gradient-to-br from-card/60 to-card/40 border border-primary/20 hover:border-primary/40 transition-colors text-center">
+                <div className="w-14 h-14 mx-auto rounded-lg bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center mb-4">
+                  <stat.icon className="h-6 w-6 text-primary" />
                 </div>
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-1">
                   {stat.value}
                 </div>
-                <div className="text-muted-foreground mt-1">{stat.label}</div>
+                <div className="text-muted-foreground text-sm">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -172,8 +173,9 @@ export default function AboutPage() {
       </section>
 
       {/* Core Values */}
-      <section className="py-24 bg-card/30">
-        <div className="container mx-auto px-4">
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.about.values}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -234,8 +236,9 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-24 bg-card/30">
-        <div className="container mx-auto px-4">
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.about.team}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">{t.about.teamText}</p>

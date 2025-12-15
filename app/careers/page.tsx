@@ -233,18 +233,19 @@ export default function CareersPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-12 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="py-16 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { value: "200+", labelVi: "Nhân sự", labelEn: "Team Members" },
               { value: "5", labelVi: "Văn phòng", labelEn: "Offices" },
               { value: "15+", labelVi: "Vị trí đang tuyển", labelEn: "Open Positions" },
               { value: "50+", labelVi: "Quốc gia", labelEn: "Countries" },
             ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary">{stat.value}</div>
-                <div className="text-muted-foreground mt-1">{locale === "vi" ? stat.labelVi : stat.labelEn}</div>
+              <div key={i} className="p-6 rounded-xl bg-gradient-to-br from-card/60 to-card/40 border border-primary/20 hover:border-primary/40 transition-colors text-center">
+                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">{stat.value}</div>
+                <div className="text-muted-foreground text-sm">{locale === "vi" ? stat.labelVi : stat.labelEn}</div>
               </div>
             ))}
           </div>
@@ -277,8 +278,9 @@ export default function CareersPage() {
       </section>
 
       {/* Job Listings */}
-      <section className="py-24 bg-card/30">
-        <div className="container mx-auto px-4">
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.careers.openPositions}</h2>
           </div>
