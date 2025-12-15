@@ -117,8 +117,19 @@ export default function TransactionsPage() {
       </Card>
 
       <Card className="bg-zinc-800/50 border-zinc-700">
-        <CardHeader>
-          <CardTitle>Danh sách giao dịch ({filteredTransactions.length})</CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-center">
+            <CardTitle>Danh sách giao dịch ({filteredTransactions.length})</CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setHideData(!hideData)}
+              className="gap-2"
+            >
+              {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -161,15 +172,15 @@ export default function TransactionsPage() {
             <TableBody>
               {currentTransactions.map((txn) => (
                 <TableRow key={txn.id}>
-                  <TableCell className="font-medium pl-6">{txn.id}</TableCell>
-                  <TableCell className="px-4">{txn.accountId}</TableCell>
-                  <TableCell className="px-4">{txn.method}</TableCell>
+                  <TableCell className="font-medium pl-6">{maskData(txn.id)}</TableCell>
+                  <TableCell className="px-4">{maskData(txn.accountId)}</TableCell>
+                  <TableCell className="px-4">{maskData(txn.method)}</TableCell>
                   <TableCell className="text-right font-semibold px-4">
-                    {txn.amount.toLocaleString('vi-VN')} VNĐ
+                    {hideData ? "**********" : txn.amount.toLocaleString('vi-VN') + " VNĐ"}
                   </TableCell>
-                  <TableCell className="px-4">{getStatusBadge(txn.status)}</TableCell>
-                  <TableCell className="max-w-[250px] truncate px-4">{txn.receivedInfo}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground pr-6">{txn.timestamp}</TableCell>
+                  <TableCell className="px-4">{hideData ? <Badge>**********</Badge> : getStatusBadge(txn.status)}</TableCell>
+                  <TableCell className="max-w-[250px] truncate px-4">{maskData(txn.receivedInfo)}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground pr-6">{maskData(txn.timestamp)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

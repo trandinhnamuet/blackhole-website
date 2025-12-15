@@ -339,16 +339,20 @@ export default function GameManagementPage() {
                       <TableCell className="font-medium pl-6">{maskData(char.characterName)}</TableCell>
                       <TableCell className="px-4">{maskData(char.accountId)}</TableCell>
                       <TableCell className="px-4">
-                        <Badge variant="outline">Lv.{char.level}</Badge>
+                        <Badge variant="outline">{hideData ? "**********" : `Lv.${char.level}`}</Badge>
                       </TableCell>
                       <TableCell className="px-4">{maskData(char.class)}</TableCell>
                       <TableCell className="px-4">{maskData(char.playTime)}</TableCell>
                       <TableCell className="px-4">
-                        <div className="flex gap-1">
-                          {char.chatLocked && <Badge variant="destructive" className="text-xs">Chat bị khóa</Badge>}
-                          {char.accountLocked && <Badge variant="destructive" className="text-xs">TK bị khóa</Badge>}
-                          {!char.chatLocked && !char.accountLocked && <Badge variant="default" className="text-xs">Bình thường</Badge>}
-                        </div>
+                        {hideData ? (
+                          <Badge>**********</Badge>
+                        ) : (
+                          <div className="flex gap-1">
+                            {char.chatLocked && <Badge variant="destructive" className="text-xs">Chat bị khóa</Badge>}
+                            {char.accountLocked && <Badge variant="destructive" className="text-xs">TK bị khóa</Badge>}
+                            {!char.chatLocked && !char.accountLocked && <Badge variant="default" className="text-xs">Bình thường</Badge>}
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-right pr-6">
                         <Button 
