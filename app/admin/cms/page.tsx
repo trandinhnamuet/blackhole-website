@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
 
 const mockContent = [
   {
@@ -47,6 +47,9 @@ export default function CMSPage() {
   const [isCreating, setIsCreating] = useState(false)
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [hideData, setHideData] = useState(false)
+
+  const maskData = (data: string) => hideData ? "*".repeat(10) : data
   
   const [formData, setFormData] = useState({
     type: "announcement",
@@ -215,7 +218,18 @@ export default function CMSPage() {
 
       <Card className="bg-zinc-800/50 border-zinc-700">
         <CardHeader>
-          <CardTitle>Danh sách nội dung ({contents.length})</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>Danh sách nội dung ({contents.length})</CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setHideData(!hideData)}
+              className="gap-2"
+            >
+              {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -258,12 +272,12 @@ export default function CMSPage() {
             <TableBody>
               {sortedContents.map((content) => (
                 <TableRow key={content.id}>
-                  <TableCell className="font-medium pl-6">{content.id}</TableCell>
-                  <TableCell className="px-4">{getTypeBadge(content.type)}</TableCell>
-                  <TableCell className="max-w-xs truncate px-4">{content.title}</TableCell>
-                  <TableCell className="px-4">{getStatusBadge(content.status)}</TableCell>
-                  <TableCell className="text-sm px-4">{content.createdAt}</TableCell>
-                  <TableCell className="text-sm px-4">{content.updatedAt}</TableCell>
+                  <TableCell className="font-medium pl-6">{maskData(content.id)}</TableCell>
+                  <TableCell className="px-4">{hideData ? <Badge>**********</Badge> : getTypeBadge(content.type)}</TableCell>
+                  <TableCell className="max-w-xs truncate px-4">{maskData(content.title)}</TableCell>
+                  <TableCell className="px-4">{hideData ? <Badge>**********</Badge> : getStatusBadge(content.status)}</TableCell>
+                  <TableCell className="text-sm px-4">{maskData(content.createdAt)}</TableCell>
+                  <TableCell className="text-sm px-4">{maskData(content.updatedAt)}</TableCell>
                   <TableCell className="text-right pr-6">
                     <div className="flex gap-2 justify-end">
                       <Button variant="outline" size="sm" onClick={() => handleEdit(content)}>
