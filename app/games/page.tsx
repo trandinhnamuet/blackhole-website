@@ -51,9 +51,9 @@ const games = [
       "Game chiến thuật sắp ra mắt với hệ thống quân đội độc đáo, chiến đấu chiến lược và chinh phục lãnh thổ.",
     descriptionEn:
       "Upcoming strategy game with unique army system, tactical combat and territorial conquest.",
-    image: "/images/vhtk2/b-ktvs-mobile.png",
+    image: "/images/vhtk2/ktvs.png",
     screenshots: [
-      "/images/vhtk2/b-ktvs-mobile.png",
+      "/images/vhtk2/ktvs.png",
     ],
     status: "coming",
     rating: 0,
@@ -105,9 +105,9 @@ const games = [
       "Game nhập vai hành động sắp ra mắt với đồ họa tuyệt đẹp, gameplay hấp dẫn và hệ thống chiến đấu độc đáo.",
     descriptionEn:
       "Upcoming action RPG with stunning graphics, engaging gameplay and unique combat system.",
-    image: "/images/vhtk2/b-tlbb-mobile.png",
+    image: "/images/vhtk2/tlbb.png",
     screenshots: [
-      "/images/vhtk2/b-tlbb-mobile.png",
+      "/images/vhtk2/tlbb.png",
     ],
     status: "coming",
     rating: 0,
