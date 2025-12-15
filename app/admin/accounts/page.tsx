@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Eye, ArrowUpDown } from "lucide-react"
+import { Eye, EyeOff, ArrowUpDown } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const mockAccounts = [
@@ -201,6 +201,9 @@ export default function AccountsPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [hideData, setHideData] = useState(false)
+
+  const maskData = (data: string) => hideData ? "*".repeat(Math.min(data.length, 10)) : data
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -253,6 +256,20 @@ export default function AccountsPage() {
       </Card>
 
       <Card className="bg-zinc-800/50 border-zinc-700">
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-center">
+            <CardTitle>Danh sách tài khoản</CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setHideData(!hideData)}
+              className="gap-2"
+            >
+              {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
+            </Button>
+          </div>
+        </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
           <Table>
@@ -294,11 +311,11 @@ export default function AccountsPage() {
             <TableBody>
               {currentAccounts.map((account) => (
                 <TableRow key={account.id}>
-                  <TableCell className="font-medium pl-6">{account.id}</TableCell>
-                  <TableCell className="px-4">{account.username}</TableCell>
-                  <TableCell className="px-4">{account.email}</TableCell>
-                  <TableCell className="px-4">{account.fullName}</TableCell>
-                  <TableCell className="px-4">{account.registeredDate}</TableCell>
+                  <TableCell className="font-medium pl-6">{maskData(account.id)}</TableCell>
+                  <TableCell className="px-4">{maskData(account.username)}</TableCell>
+                  <TableCell className="px-4">{maskData(account.email)}</TableCell>
+                  <TableCell className="px-4">{maskData(account.fullName)}</TableCell>
+                  <TableCell className="px-4">{maskData(account.registeredDate)}</TableCell>
                   <TableCell className="px-4">
                     <Badge variant={account.status === "activated" ? "default" : "secondary"}>
                       {account.status === "activated" ? "Đã kích hoạt" : "Chưa kích hoạt"}

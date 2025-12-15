@@ -8,8 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
@@ -95,6 +96,7 @@ const userGrowthData = [
 export default function GameManagementPage() {
   const [search, setSearch] = useState("")
   const [selectedCharacter, setSelectedCharacter] = useState<typeof mockCharacters[0] | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [warningMessage, setWarningMessage] = useState("Chơi quá 180 phút một ngày sẽ ảnh hưởng xấu đến sức khỏe")
   const [systemStats] = useState({
     onlinePlayers: 1247,
@@ -104,6 +106,9 @@ export default function GameManagementPage() {
   })
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [hideData, setHideData] = useState(false)
+
+  const maskData = (data: string | number) => hideData ? "*".repeat(10) : data.toString()
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -280,6 +285,20 @@ export default function GameManagementPage() {
           </Card>
 
           <Card className="bg-zinc-800/50 border-zinc-700">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-center">
+                <CardTitle>Danh sách nhân vật</CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setHideData(!hideData)}
+                  className="gap-2"
+                >
+                  {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                  {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
+                </Button>
+              </div>
+            </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
               <Table>
@@ -317,13 +336,13 @@ export default function GameManagementPage() {
                 <TableBody>
                   {sortedCharacters.map((char) => (
                     <TableRow key={char.characterId}>
-                      <TableCell className="font-medium pl-6">{char.characterName}</TableCell>
-                      <TableCell className="px-4">{char.accountId}</TableCell>
+                      <TableCell className="font-medium pl-6">{maskData(char.characterName)}</TableCell>
+                      <TableCell className="px-4">{maskData(char.accountId)}</TableCell>
                       <TableCell className="px-4">
                         <Badge variant="outline">Lv.{char.level}</Badge>
                       </TableCell>
-                      <TableCell className="px-4">{char.class}</TableCell>
-                      <TableCell className="px-4">{char.playTime}</TableCell>
+                      <TableCell className="px-4">{maskData(char.class)}</TableCell>
+                      <TableCell className="px-4">{maskData(char.playTime)}</TableCell>
                       <TableCell className="px-4">
                         <div className="flex gap-1">
                           {char.chatLocked && <Badge variant="destructive" className="text-xs">Chat bị khóa</Badge>}
@@ -333,11 +352,15 @@ export default function GameManagementPage() {
                       </TableCell>
                       <TableCell className="text-right pr-6">
                         <Button 
-                          variant="outline" 
+                          variant="default" 
                           size="sm"
-                          onClick={() => setSelectedCharacter(char)}
+                          className="bg-primary hover:bg-primary/90"
+                          onClick={() => {
+                            setSelectedCharacter(char)
+                            setIsDialogOpen(true)
+                          }}
                         >
-                          Chi tiết
+                          <Eye className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -347,95 +370,6 @@ export default function GameManagementPage() {
               </div>
             </CardContent>
           </Card>
-
-          {selectedCharacter && (
-            <Card className="bg-zinc-800/50 border-zinc-700">
-              <CardHeader>
-                <CardTitle>Thông tin chi tiết: {selectedCharacter.characterName}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Mã nhân vật</p>
-                    <p className="text-lg font-semibold">{selectedCharacter.characterId}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Mã tài khoản</p>
-                    <p className="text-lg font-semibold">{selectedCharacter.accountId}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Cấp độ</p>
-                    <p className="text-lg font-semibold text-purple-600">Lv.{selectedCharacter.level}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Lớp nhân vật</p>
-                    <p className="text-lg font-semibold">{selectedCharacter.class}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Thời gian chơi</p>
-                    <p className="text-lg font-semibold">{selectedCharacter.playTime}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Vàng trong game</p>
-                    <p className="text-lg font-semibold text-yellow-600">
-                      {selectedCharacter.gold.toLocaleString('vi-VN')}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Điểm kinh nghiệm</p>
-                    <p className="text-lg font-semibold text-blue-600">
-                      {selectedCharacter.experience.toLocaleString('vi-VN')} EXP
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Lần đăng nhập cuối</p>
-                    <p className="text-sm">{selectedCharacter.lastLogin}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Lần đăng xuất cuối</p>
-                    <p className="text-sm">{selectedCharacter.lastLogout}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Vật phẩm trong kho ({selectedCharacter.items.length})</h3>
-                  <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="hover:bg-transparent">
-                        <TableHead className="pl-6">Tên vật phẩm</TableHead>
-                        <TableHead className="w-[120px] px-4">Cấp độ</TableHead>
-                        <TableHead className="text-right w-[120px] pr-6">Số lượng</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {selectedCharacter.items.map((item, idx) => (
-                        <TableRow key={idx}>
-                          <TableCell className="font-medium pl-6">{item.name}</TableCell>
-                          <TableCell className="px-4">
-                            <Badge variant="outline">Lv.{item.level}</Badge>
-                          </TableCell>
-                          <TableCell className="text-right pr-6">{item.quantity}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button variant="default">Tặng quà</Button>
-                  <Button variant="outline">Chuyển nhân vật</Button>
-                  <Button variant="destructive">
-                    {selectedCharacter.chatLocked ? "Mở khóa chat" : "Khóa chat"}
-                  </Button>
-                  <Button variant="destructive">
-                    {selectedCharacter.accountLocked ? "Mở khóa tài khoản" : "Khóa tài khoản"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
 
         <TabsContent value="warning" className="space-y-6">
@@ -470,6 +404,118 @@ export default function GameManagementPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="bg-zinc-800 border-zinc-700" style={{ maxWidth: '90vw', width: '90vw' }}>
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold">Chi tiết nhân vật</DialogTitle>
+            <DialogDescription className="text-base">
+              Thông tin chi tiết và quản lý nhân vật
+            </DialogDescription>
+          </DialogHeader>
+          {selectedCharacter && (
+            <div className="space-y-6 mt-2">
+              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+                <h3 className="text-xl font-semibold mb-4 text-primary">Thông tin nhân vật</h3>
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Mã nhân vật</Label>
+                    <Input value={selectedCharacter.characterId} disabled className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Tên nhân vật</Label>
+                    <Input value={selectedCharacter.characterName} className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Mã tài khoản</Label>
+                    <Input value={selectedCharacter.accountId} disabled className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Cấp độ</Label>
+                    <Input value={selectedCharacter.level} type="number" className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Lớp nhân vật</Label>
+                    <Input value={selectedCharacter.class} className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Thời gian chơi</Label>
+                    <Input value={selectedCharacter.playTime} disabled className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Vàng trong game</Label>
+                    <Input value={selectedCharacter.gold.toLocaleString('vi-VN')} className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Điểm kinh nghiệm</Label>
+                    <Input value={selectedCharacter.experience.toLocaleString('vi-VN')} className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Trạng thái</Label>
+                    <div className="flex gap-2 pt-2">
+                      {selectedCharacter.chatLocked && <Badge variant="destructive">Chat bị khóa</Badge>}
+                      {selectedCharacter.accountLocked && <Badge variant="destructive">TK bị khóa</Badge>}
+                      {!selectedCharacter.chatLocked && !selectedCharacter.accountLocked && <Badge variant="default">Bình thường</Badge>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+                <h3 className="text-xl font-semibold mb-4 text-primary">Lịch sử hoạt động</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Lần đăng nhập cuối</Label>
+                    <Input value={selectedCharacter.lastLogin} disabled className="bg-zinc-800" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-zinc-400">Lần đăng xuất cuối</Label>
+                    <Input value={selectedCharacter.lastLogout} disabled className="bg-zinc-800" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+                <h3 className="text-xl font-semibold mb-4 text-primary">Vật phẩm trong kho ({selectedCharacter.items.length})</h3>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="pl-6">Tên vật phẩm</TableHead>
+                        <TableHead className="w-[120px] px-4">Cấp độ</TableHead>
+                        <TableHead className="text-right w-[120px] pr-6">Số lượng</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {selectedCharacter.items.map((item, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell className="font-medium pl-6">{item.name}</TableCell>
+                          <TableCell className="px-4">
+                            <Badge variant="outline">Lv.{item.level}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right pr-6">{item.quantity}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <Button variant="default">Lưu thay đổi</Button>
+                <Button variant="outline">Tặng quà</Button>
+                <Button variant="outline">Chuyển nhân vật</Button>
+                <Button variant="destructive">
+                  {selectedCharacter.chatLocked ? "Mở khóa chat" : "Khóa chat"}
+                </Button>
+                <Button variant="destructive">
+                  {selectedCharacter.accountLocked ? "Mở khóa tài khoản" : "Khóa tài khoản"}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       </div>
     </div>
   )

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
 
 const mockBalances = [
   { accountId: "ACC001", accountName: "dragonslayer99", transactionId: "TXN20240115001", deposited: 500000, silver: 500 },
@@ -34,6 +34,9 @@ export default function BalancePage() {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [hideData, setHideData] = useState(false)
+
+  const maskData = (data: string | number) => hideData ? "*".repeat(10) : data.toString()
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -131,7 +134,18 @@ export default function BalancePage() {
 
       <Card className="bg-zinc-800/50 border-zinc-700">
         <CardHeader>
-          <CardTitle>Danh sách tất cả tài khoản</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>Danh sách tất cả tài khoản</CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setHideData(!hideData)}
+              className="gap-2"
+            >
+              {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -168,14 +182,14 @@ export default function BalancePage() {
             <TableBody>
               {currentBalances.map((balance) => (
                 <TableRow key={balance.accountId}>
-                  <TableCell className="font-medium pl-6">{balance.accountId}</TableCell>
-                  <TableCell className="px-4">{balance.accountName}</TableCell>
-                  <TableCell className="px-4">{balance.transactionId}</TableCell>
+                  <TableCell className="font-medium pl-6">{maskData(balance.accountId)}</TableCell>
+                  <TableCell className="px-4">{maskData(balance.accountName)}</TableCell>
+                  <TableCell className="px-4">{maskData(balance.transactionId)}</TableCell>
                   <TableCell className="text-right text-green-600 font-semibold px-4">
-                    {balance.deposited.toLocaleString('vi-VN')} VNĐ
+                    {hideData ? "**********" : balance.deposited.toLocaleString('vi-VN') + " VNĐ"}
                   </TableCell>
                   <TableCell className="text-right text-yellow-600 font-semibold pr-6">
-                    {balance.silver.toLocaleString('vi-VN')}
+                    {hideData ? "**********" : balance.silver.toLocaleString('vi-VN')}
                   </TableCell>
                 </TableRow>
               ))}
