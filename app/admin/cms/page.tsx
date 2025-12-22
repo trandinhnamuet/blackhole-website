@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff, Moon, Sun } from "lucide-react"
 
 const mockContent = [
   {
@@ -48,6 +48,7 @@ export default function CMSPage() {
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [hideData, setHideData] = useState(false)
+  const [isLightMode, setIsLightMode] = useState(false)
 
   const maskData = (data: string) => hideData ? "*".repeat(10) : data
   
@@ -147,22 +148,34 @@ export default function CMSPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900">
+    <div className={`min-h-screen ${isLightMode ? 'bg-gray-50' : 'bg-zinc-900'}`}>
       <div className="container mx-auto p-6 pt-24 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Quản Lý Nội Dung (CMS)</h1>
-        <Button onClick={handleCreate}>+ Tạo nội dung mới</Button>
+        <h1 className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Quản Lý Nội Dung (CMS)</h1>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={() => setIsLightMode(!isLightMode)}
+            className={isLightMode ? 'bg-white border-gray-300' : 'bg-zinc-800 border-zinc-700'}
+          >
+            {isLightMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+          </Button>
+          <Button onClick={handleCreate}>+ Tạo nội dung mới</Button>
+        </div>
       </div>
 
       {(isCreating || editingContent) && (
-        <Card className="bg-zinc-800/50 border-zinc-700">
+        <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
           <CardHeader>
-            <CardTitle>{isCreating ? "Tạo nội dung mới" : "Chỉnh sửa nội dung"}</CardTitle>
+            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>{isCreating ? "Tạo nội dung mới" : "Chỉnh sửa nội dung"}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="type">Loại nội dung</Label>
+                <Label htmlFor="type" className={isLightMode ? 'text-gray-900' : ''}>
+                  Loại nội dung
+                </Label>
                 <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
                   <SelectTrigger>
                     <SelectValue />
@@ -175,7 +188,9 @@ export default function CMSPage() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="status">Trạng thái</Label>
+                <Label htmlFor="status" className={isLightMode ? 'text-gray-900' : ''}>
+                  Trạng thái
+                </Label>
                 <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
                   <SelectTrigger>
                     <SelectValue />
@@ -188,7 +203,9 @@ export default function CMSPage() {
               </div>
             </div>
             <div>
-              <Label htmlFor="title">Tiêu đề</Label>
+              <Label htmlFor="title" className={isLightMode ? 'text-gray-900' : ''}>
+                Tiêu đề
+              </Label>
               <Input 
                 id="title"
                 value={formData.title}
@@ -197,7 +214,9 @@ export default function CMSPage() {
               />
             </div>
             <div>
-              <Label htmlFor="content">Nội dung</Label>
+              <Label htmlFor="content" className={isLightMode ? 'text-gray-900' : ''}>
+                Nội dung
+              </Label>
               <Textarea 
                 id="content"
                 value={formData.content}
@@ -216,15 +235,15 @@ export default function CMSPage() {
         </Card>
       )}
 
-      <Card className="bg-zinc-800/50 border-zinc-700">
+      <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Danh sách nội dung ({contents.length})</CardTitle>
+            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Danh sách nội dung ({contents.length})</CardTitle>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setHideData(!hideData)}
-              className="gap-2"
+              className={`gap-2 ${isLightMode ? 'text-gray-900' : ''}`}
             >
               {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
@@ -237,47 +256,47 @@ export default function CMSPage() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[100px] pl-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("id")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("id")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Mã <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="w-[130px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("type")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("type")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Loại <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("title")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("title")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Tiêu đề <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="w-[140px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("status")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("status")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Trạng thái <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="w-[160px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("createdAt")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("createdAt")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Ngày tạo <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="w-[160px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("updatedAt")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("updatedAt")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Cập nhật <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-right w-[160px] pr-6">Thao tác</TableHead>
+                <TableHead className={`text-right w-[160px] pr-6 ${isLightMode ? 'text-gray-900' : ''}`}>Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sortedContents.map((content) => (
                 <TableRow key={content.id}>
-                  <TableCell className="font-medium pl-6">{maskData(content.id)}</TableCell>
+                  <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(content.id)}</TableCell>
                   <TableCell className="px-4">{hideData ? <Badge>**********</Badge> : getTypeBadge(content.type)}</TableCell>
-                  <TableCell className="max-w-xs truncate px-4">{maskData(content.title)}</TableCell>
+                  <TableCell className={`max-w-xs truncate px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(content.title)}</TableCell>
                   <TableCell className="px-4">{hideData ? <Badge>**********</Badge> : getStatusBadge(content.status)}</TableCell>
-                  <TableCell className="text-sm px-4">{maskData(content.createdAt)}</TableCell>
-                  <TableCell className="text-sm px-4">{maskData(content.updatedAt)}</TableCell>
+                  <TableCell className={`text-sm px-4 ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>{maskData(content.createdAt)}</TableCell>
+                  <TableCell className={`text-sm px-4 ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>{maskData(content.updatedAt)}</TableCell>
                   <TableCell className="text-right pr-6">
                     <div className="flex gap-2 justify-end">
                       <Button variant="outline" size="sm" onClick={() => handleEdit(content)}>

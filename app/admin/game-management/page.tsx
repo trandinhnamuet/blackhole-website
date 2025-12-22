@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff, Moon, Sun } from "lucide-react"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
@@ -107,6 +107,7 @@ export default function GameManagementPage() {
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [hideData, setHideData] = useState(false)
+  const [isLightMode, setIsLightMode] = useState(false)
 
   const maskData = (data: string | number) => hideData ? "*".repeat(10) : data.toString()
 
@@ -137,27 +138,37 @@ export default function GameManagementPage() {
   })
 
   return (
-    <div className="min-h-screen bg-zinc-900">
+    <div className={`min-h-screen ${isLightMode ? 'bg-gray-50' : 'bg-zinc-900'}`}>
       <div className="container mx-auto p-6 pt-24 space-y-6">
-      <h1 className="text-3xl font-bold">Quản Trị Hệ Thống Game</h1>
+      <div className="flex justify-between items-center">
+        <h1 className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Quản Trị Hệ Thống Game</h1>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={() => setIsLightMode(!isLightMode)}
+          className={isLightMode ? 'bg-white border-gray-300' : 'bg-zinc-800 border-zinc-700'}
+        >
+          {isLightMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+        </Button>
+      </div>
 
       <Tabs defaultValue="system" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 bg-zinc-800/50 border border-zinc-700 rounded-lg p-1 h-auto">
+        <TabsList className={`grid w-full grid-cols-3 border rounded-lg p-1 h-auto ${isLightMode ? 'bg-gray-100 border-gray-300' : 'bg-zinc-800/50 border-zinc-700'}`}>
           <TabsTrigger 
             value="system" 
-            className="text-base font-semibold py-6 px-6 rounded-md whitespace-nowrap data-[state=active]:!bg-zinc-600 data-[state=active]:!text-white data-[state=active]:!border-2 data-[state=active]:!border-primary"
+            className={`text-base font-semibold py-6 px-6 rounded-md whitespace-nowrap ${isLightMode ? 'data-[state=active]:!bg-gray-300 data-[state=active]:!text-gray-900' : 'data-[state=active]:!bg-zinc-600 data-[state=active]:!text-white'} data-[state=active]:!border-2 data-[state=active]:!border-primary`}
           >
             Hệ thống
           </TabsTrigger>
           <TabsTrigger 
             value="characters" 
-            className="text-base font-semibold py-6 px-6 rounded-md whitespace-nowrap data-[state=active]:!bg-zinc-600 data-[state=active]:!text-white data-[state=active]:!border-2 data-[state=active]:!border-primary"
+            className={`text-base font-semibold py-6 px-6 rounded-md whitespace-nowrap ${isLightMode ? 'data-[state=active]:!bg-gray-300 data-[state=active]:!text-gray-900' : 'data-[state=active]:!bg-zinc-600 data-[state=active]:!text-white'} data-[state=active]:!border-2 data-[state=active]:!border-primary`}
           >
             Nhân vật
           </TabsTrigger>
           <TabsTrigger 
             value="warning" 
-            className="text-base font-semibold py-6 px-6 rounded-md whitespace-nowrap data-[state=active]:!bg-zinc-400 data-[state=active]:!text-white data-[state=active]:!border-2 data-[state=active]:!border-primary"
+            className={`text-base font-semibold py-6 px-6 rounded-md whitespace-nowrap ${isLightMode ? 'data-[state=active]:!bg-gray-300 data-[state=active]:!text-gray-900' : 'data-[state=active]:!bg-zinc-400 data-[state=active]:!text-white'} data-[state=active]:!border-2 data-[state=active]:!border-primary`}
           >
             Cảnh báo
           </TabsTrigger>
@@ -165,33 +176,33 @@ export default function GameManagementPage() {
 
         <TabsContent value="system" className="space-y-6">
           <div className="grid grid-cols-4 gap-4">
-            <Card className="bg-zinc-800/50 border-zinc-700">
+            <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Người chơi online</CardTitle>
+                <CardTitle className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Người chơi online</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold text-green-600">{systemStats.onlinePlayers}</p>
               </CardContent>
             </Card>
-            <Card className="bg-zinc-800/50 border-zinc-700">
+            <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Tổng nhân vật</CardTitle>
+                <CardTitle className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Tổng nhân vật</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{systemStats.totalCharacters}</p>
+                <p className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{systemStats.totalCharacters}</p>
               </CardContent>
             </Card>
-            <Card className="bg-zinc-800/50 border-zinc-700">
+            <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Server hoạt động</CardTitle>
+                <CardTitle className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Server hoạt động</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold text-blue-600">{systemStats.activeServers}</p>
               </CardContent>
             </Card>
-            <Card className="bg-zinc-800/50 border-zinc-700">
+            <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Tải server</CardTitle>
+                <CardTitle className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Tải server</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold text-yellow-600">{systemStats.serverLoad}</p>
@@ -200,10 +211,10 @@ export default function GameManagementPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-6">
-            <Card className="bg-zinc-800/50 border-zinc-700">
+            <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
               <CardHeader>
-                <CardTitle>Hiệu năng hệ thống (24h)</CardTitle>
-                <CardDescription>CPU, Memory và Network usage</CardDescription>
+                <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Hiệu năng hệ thống (24h)</CardTitle>
+                <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>CPU, Memory và Network usage</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer
@@ -236,10 +247,10 @@ export default function GameManagementPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-zinc-800/50 border-zinc-700">
+            <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
               <CardHeader>
-                <CardTitle>Người dùng theo tháng</CardTitle>
-                <CardDescription>Tổng người dùng và người dùng mới</CardDescription>
+                <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Người dùng theo tháng</CardTitle>
+                <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>Tổng người dùng và người dùng mới</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer
@@ -270,10 +281,10 @@ export default function GameManagementPage() {
         </TabsContent>
 
         <TabsContent value="characters" className="space-y-6">
-          <Card className="bg-zinc-800/50 border-zinc-700">
+          <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
             <CardHeader>
-              <CardTitle>Tìm kiếm nhân vật</CardTitle>
-              <CardDescription>Tìm theo tên nhân vật hoặc mã tài khoản</CardDescription>
+              <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Tìm kiếm nhân vật</CardTitle>
+              <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>Tìm theo tên nhân vật hoặc mã tài khoản</CardDescription>
             </CardHeader>
             <CardContent>
               <Input 
@@ -284,15 +295,15 @@ export default function GameManagementPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-zinc-800/50 border-zinc-700">
+          <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
             <CardHeader className="pb-3">
               <div className="flex justify-between items-center">
-                <CardTitle>Danh sách nhân vật</CardTitle>
+                <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Danh sách nhân vật</CardTitle>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setHideData(!hideData)}
-                  className="gap-2"
+                  className={`gap-2 ${isLightMode ? 'text-gray-900' : ''}`}
                 >
                   {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
@@ -305,44 +316,44 @@ export default function GameManagementPage() {
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="pl-6">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort("characterName")} className="h-8 px-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort("characterName")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                         Tên nhân vật <ArrowUpDown className="ml-1 h-3 w-3" />
                       </Button>
                     </TableHead>
                     <TableHead className="w-[100px] px-4">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort("accountId")} className="h-8 px-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort("accountId")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                         Mã TK <ArrowUpDown className="ml-1 h-3 w-3" />
                       </Button>
                     </TableHead>
                     <TableHead className="w-[100px] px-4">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort("level")} className="h-8 px-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort("level")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                         Cấp độ <ArrowUpDown className="ml-1 h-3 w-3" />
                       </Button>
                     </TableHead>
                     <TableHead className="w-[120px] px-4">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort("class")} className="h-8 px-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort("class")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                         Lớp <ArrowUpDown className="ml-1 h-3 w-3" />
                       </Button>
                     </TableHead>
                     <TableHead className="w-[140px] px-4">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort("playTime")} className="h-8 px-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort("playTime")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                         Thời gian chơi <ArrowUpDown className="ml-1 h-3 w-3" />
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[180px] px-4">Trạng thái</TableHead>
-                    <TableHead className="text-right w-[120px] pr-6">Thao tác</TableHead>
+                    <TableHead className={`w-[180px] px-4 ${isLightMode ? 'text-gray-900' : ''}`}>Trạng thái</TableHead>
+                    <TableHead className={`text-right w-[120px] pr-6 ${isLightMode ? 'text-gray-900' : ''}`}>Thao tác</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {sortedCharacters.map((char) => (
                     <TableRow key={char.characterId}>
-                      <TableCell className="font-medium pl-6">{maskData(char.characterName)}</TableCell>
-                      <TableCell className="px-4">{maskData(char.accountId)}</TableCell>
+                      <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(char.characterName)}</TableCell>
+                      <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(char.accountId)}</TableCell>
                       <TableCell className="px-4">
                         <Badge variant="outline">{hideData ? "**********" : `Lv.${char.level}`}</Badge>
                       </TableCell>
-                      <TableCell className="px-4">{maskData(char.class)}</TableCell>
-                      <TableCell className="px-4">{maskData(char.playTime)}</TableCell>
+                      <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(char.class)}</TableCell>
+                      <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(char.playTime)}</TableCell>
                       <TableCell className="px-4">
                         {hideData ? (
                           <Badge>**********</Badge>
@@ -377,16 +388,18 @@ export default function GameManagementPage() {
         </TabsContent>
 
         <TabsContent value="warning" className="space-y-6">
-          <Card className="bg-zinc-800/50 border-zinc-700">
+          <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
             <CardHeader>
-              <CardTitle>Cảnh báo trên màn hình game</CardTitle>
-              <CardDescription>
+              <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Cảnh báo trên màn hình game</CardTitle>
+              <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>
                 Dòng chữ chạy sẽ hiển thị liên tục trên màn hình game của người chơi
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="warning">Nội dung cảnh báo</Label>
+                <Label htmlFor="warning" className={isLightMode ? 'text-gray-900' : ''}>
+                  Nội dung cảnh báo
+                </Label>
                 <Textarea 
                   id="warning"
                   value={warningMessage}
@@ -410,16 +423,16 @@ export default function GameManagementPage() {
       </Tabs>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-zinc-800 border-zinc-700" style={{ maxWidth: '90vw', width: '90vw' }}>
+        <DialogContent className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800 border-zinc-700'} style={{ maxWidth: '90vw', width: '90vw' }}>
           <DialogHeader>
-            <DialogTitle className="text-3xl font-bold">Chi tiết nhân vật</DialogTitle>
-            <DialogDescription className="text-base">
+            <DialogTitle className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Chi tiết nhân vật</DialogTitle>
+            <DialogDescription className={`text-base ${isLightMode ? 'text-gray-600' : 'text-gray-400'}`}>
               Thông tin chi tiết và quản lý nhân vật
             </DialogDescription>
           </DialogHeader>
           {selectedCharacter && (
             <div className="space-y-6 mt-2">
-              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+              <div className={`rounded-lg p-6 border ${isLightMode ? 'bg-gray-50 border-gray-200' : 'bg-zinc-900/50 border-zinc-700'}`}>
                 <h3 className="text-xl font-semibold mb-4 text-primary">Thông tin nhân vật</h3>
                 <div className="grid grid-cols-3 gap-6">
                   <div className="space-y-1">
@@ -465,7 +478,7 @@ export default function GameManagementPage() {
                 </div>
               </div>
 
-              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+              <div className={`rounded-lg p-6 border ${isLightMode ? 'bg-gray-50 border-gray-200' : 'bg-zinc-900/50 border-zinc-700'}`}>
                 <h3 className="text-xl font-semibold mb-4 text-primary">Lịch sử hoạt động</h3>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1">
@@ -479,25 +492,25 @@ export default function GameManagementPage() {
                 </div>
               </div>
 
-              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+              <div className={`rounded-lg p-6 border ${isLightMode ? 'bg-gray-50 border-gray-200' : 'bg-zinc-900/50 border-zinc-700'}`}>
                 <h3 className="text-xl font-semibold mb-4 text-primary">Vật phẩm trong kho ({selectedCharacter.items.length})</h3>
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent">
-                        <TableHead className="pl-6">Tên vật phẩm</TableHead>
-                        <TableHead className="w-[120px] px-4">Cấp độ</TableHead>
-                        <TableHead className="text-right w-[120px] pr-6">Số lượng</TableHead>
+                        <TableHead className={`pl-6 ${isLightMode ? 'text-gray-900' : ''}`}>Tên vật phẩm</TableHead>
+                        <TableHead className={`w-[120px] px-4 ${isLightMode ? 'text-gray-900' : ''}`}>Cấp độ</TableHead>
+                        <TableHead className={`text-right w-[120px] pr-6 ${isLightMode ? 'text-gray-900' : ''}`}>Số lượng</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {selectedCharacter.items.map((item, idx) => (
                         <TableRow key={idx}>
-                          <TableCell className="font-medium pl-6">{item.name}</TableCell>
+                          <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{item.name}</TableCell>
                           <TableCell className="px-4">
                             <Badge variant="outline">Lv.{item.level}</Badge>
                           </TableCell>
-                          <TableCell className="text-right pr-6">{item.quantity}</TableCell>
+                          <TableCell className={`text-right pr-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{item.quantity}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

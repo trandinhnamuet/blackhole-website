@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff, Moon, Sun } from "lucide-react"
 
 const mockBalances = [
   { accountId: "ACC001", accountName: "dragonslayer99", transactionId: "TXN20240115001", deposited: 500000, silver: 500 },
@@ -35,6 +35,7 @@ export default function BalancePage() {
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [hideData, setHideData] = useState(false)
+  const [isLightMode, setIsLightMode] = useState(false)
 
   const maskData = (data: string | number) => hideData ? "*".repeat(10) : data.toString()
 
@@ -69,19 +70,31 @@ export default function BalancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900">
+    <div className={`min-h-screen ${isLightMode ? 'bg-gray-50' : 'bg-zinc-900'}`}>
       <div className="container mx-auto p-6 pt-24 space-y-6">
-      <h1 className="text-3xl font-bold">Tra Cứu Số Dư</h1>
+      <div className="flex justify-between items-center">
+        <h1 className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Tra Cứu Số Dư</h1>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={() => setIsLightMode(!isLightMode)}
+          className={isLightMode ? 'bg-white border-gray-300' : 'bg-zinc-800 border-zinc-700'}
+        >
+          {isLightMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+        </Button>
+      </div>
 
-      <Card className="bg-zinc-800/50 border-zinc-700">
+      <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader>
-          <CardTitle>Tìm kiếm tài khoản</CardTitle>
-          <CardDescription>Nhập mã tài khoản hoặc tên tài khoản</CardDescription>
+          <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Tìm kiếm tài khoản</CardTitle>
+          <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>Nhập mã tài khoản hoặc tên tài khoản</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-4">
             <div className="flex-1">
-              <Label htmlFor="search">Mã tài khoản / Tên tài khoản</Label>
+              <Label htmlFor="search" className={isLightMode ? 'text-gray-900' : ''}>
+                Mã tài khoản / Tên tài khoản
+              </Label>
               <Input 
                 id="search"
                 placeholder="Nhập mã hoặc tên tài khoản..." 
@@ -97,32 +110,32 @@ export default function BalancePage() {
       </Card>
 
       {result && (
-        <Card className="bg-zinc-800/50 border-zinc-700">
+        <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
           <CardHeader>
-            <CardTitle>Kết quả tra cứu</CardTitle>
+            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Kết quả tra cứu</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Mã tài khoản</p>
-                <p className="text-2xl font-bold">{result.accountId}</p>
+                <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Mã tài khoản</p>
+                <p className={`text-2xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{result.accountId}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Tên tài khoản</p>
-                <p className="text-2xl font-bold">{result.accountName}</p>
+                <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Tên tài khoản</p>
+                <p className={`text-2xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{result.accountName}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Mã giao dịch</p>
-                <p className="text-2xl font-bold">{result.transactionId}</p>
+                <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Mã giao dịch</p>
+                <p className={`text-2xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{result.transactionId}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Tiền đã nạp</p>
+                <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Tiền đã nạp</p>
                 <p className="text-2xl font-bold text-green-600">
                   {result.deposited.toLocaleString('vi-VN')} VNĐ
                 </p>
               </div>
               <div className="col-span-2">
-                <p className="text-sm font-medium text-muted-foreground">Số bạc (trong game)</p>
+                <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Số bạc (trong game)</p>
                 <p className="text-3xl font-bold text-yellow-600">
                   {result.silver.toLocaleString('vi-VN')} Bạc
                 </p>
@@ -132,15 +145,15 @@ export default function BalancePage() {
         </Card>
       )}
 
-      <Card className="bg-zinc-800/50 border-zinc-700">
+      <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Danh sách tất cả tài khoản</CardTitle>
+            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Danh sách tất cả tài khoản</CardTitle>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setHideData(!hideData)}
-              className="gap-2"
+              className={`gap-2 ${isLightMode ? 'text-gray-900' : ''}`}
             >
               {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
@@ -153,27 +166,27 @@ export default function BalancePage() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[120px] pl-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("accountId")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("accountId")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Mã tài khoản <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("accountName")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("accountName")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Tên tài khoản <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("transactionId")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("transactionId")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Mã giao dịch <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="text-right w-[150px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("deposited")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("deposited")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Tiền đã nạp <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="text-right w-[150px] pr-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("silver")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("silver")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Số bạc <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
@@ -182,9 +195,9 @@ export default function BalancePage() {
             <TableBody>
               {currentBalances.map((balance) => (
                 <TableRow key={balance.accountId}>
-                  <TableCell className="font-medium pl-6">{maskData(balance.accountId)}</TableCell>
-                  <TableCell className="px-4">{maskData(balance.accountName)}</TableCell>
-                  <TableCell className="px-4">{maskData(balance.transactionId)}</TableCell>
+                  <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(balance.accountId)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(balance.accountName)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(balance.transactionId)}</TableCell>
                   <TableCell className="text-right text-green-600 font-semibold px-4">
                     {hideData ? "**********" : balance.deposited.toLocaleString('vi-VN') + " VNĐ"}
                   </TableCell>
@@ -198,7 +211,7 @@ export default function BalancePage() {
           </div>
           <div className="flex items-center justify-between p-4 border-t border-zinc-700">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Hiển thị</span>
+              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Hiển thị</span>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => {
                 setItemsPerPage(Number(value))
                 setCurrentPage(1)
@@ -213,7 +226,7 @@ export default function BalancePage() {
                   <SelectItem value="50">50</SelectItem>
                 </SelectContent>
               </Select>
-              <span className="text-sm text-muted-foreground">
+              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
                 trên tổng {sortedBalances.length} bản ghi
               </span>
             </div>
@@ -223,10 +236,11 @@ export default function BalancePage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
+                className={isLightMode ? 'text-gray-900' : ''}
               >
                 Trước
               </Button>
-              <span className="text-sm">
+              <span className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
                 Trang {currentPage} / {totalPages}
               </span>
               <Button
@@ -234,6 +248,7 @@ export default function BalancePage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
+                className={isLightMode ? 'text-gray-900' : ''}
               >
                 Sau
               </Button>

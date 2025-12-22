@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Eye, EyeOff, ArrowUpDown } from "lucide-react"
+import { Eye, EyeOff, ArrowUpDown, Moon, Sun } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const mockAccounts = [
@@ -202,6 +202,7 @@ export default function AccountsPage() {
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [hideData, setHideData] = useState(false)
+  const [isLightMode, setIsLightMode] = useState(false)
 
   const maskData = (data: string) => hideData ? "*".repeat(Math.min(data.length, 10)) : data
 
@@ -235,16 +236,24 @@ export default function AccountsPage() {
   const currentAccounts = sortedAccounts.slice(startIndex, endIndex)
 
   return (
-    <div className="min-h-screen bg-zinc-900">
+    <div className={`min-h-screen ${isLightMode ? 'bg-gray-50' : 'bg-zinc-900'}`}>
       <div className="container mx-auto p-6 pt-24 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Quản Lý Tài Khoản</h1>
+        <h1 className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Quản Lý Tài Khoản</h1>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={() => setIsLightMode(!isLightMode)}
+          className={isLightMode ? 'bg-white border-gray-300' : 'bg-zinc-800 border-zinc-700'}
+        >
+          {isLightMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+        </Button>
       </div>
 
-      <Card className="bg-zinc-800/50 border-zinc-700">
+      <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader>
-          <CardTitle>Tìm kiếm tài khoản</CardTitle>
-          <CardDescription>Tìm theo tên tài khoản, email hoặc họ tên</CardDescription>
+          <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Tìm kiếm tài khoản</CardTitle>
+          <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>Tìm theo tên tài khoản, email hoặc họ tên</CardDescription>
         </CardHeader>
         <CardContent>
           <Input 
@@ -255,15 +264,15 @@ export default function AccountsPage() {
         </CardContent>
       </Card>
 
-      <Card className="bg-zinc-800/50 border-zinc-700">
+      <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>Danh sách tài khoản</CardTitle>
+            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Danh sách tài khoản</CardTitle>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setHideData(!hideData)}
-              className="gap-2"
+              className={`gap-2 ${isLightMode ? 'text-gray-900' : ''}`}
             >
               {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
@@ -276,46 +285,46 @@ export default function AccountsPage() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[100px] pl-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("id")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("id")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Mã TK <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("username")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("username")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Tên tài khoản <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("email")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("email")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Email <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("fullName")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("fullName")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Họ tên <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("registeredDate")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("registeredDate")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Ngày đăng ký <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="w-[150px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("status")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("status")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Trạng thái <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-right w-[120px] pr-6">Thao tác</TableHead>
+                <TableHead className={`text-right w-[120px] pr-6 ${isLightMode ? 'text-gray-900' : ''}`}>Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentAccounts.map((account) => (
                 <TableRow key={account.id}>
-                  <TableCell className="font-medium pl-6">{maskData(account.id)}</TableCell>
-                  <TableCell className="px-4">{maskData(account.username)}</TableCell>
-                  <TableCell className="px-4">{maskData(account.email)}</TableCell>
-                  <TableCell className="px-4">{maskData(account.fullName)}</TableCell>
-                  <TableCell className="px-4">{maskData(account.registeredDate)}</TableCell>
+                  <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.id)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.username)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.email)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.fullName)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.registeredDate)}</TableCell>
                   <TableCell className="px-4">
                     <Badge variant={account.status === "activated" ? "default" : "secondary"}>
                       {account.status === "activated" ? "Đã kích hoạt" : "Chưa kích hoạt"}
@@ -341,7 +350,7 @@ export default function AccountsPage() {
           </div>
           <div className="flex items-center justify-between p-4 border-t border-zinc-700">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Hiển thị</span>
+              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Hiển thị</span>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => {
                 setItemsPerPage(Number(value))
                 setCurrentPage(1)
@@ -356,7 +365,7 @@ export default function AccountsPage() {
                   <SelectItem value="50">50</SelectItem>
                 </SelectContent>
               </Select>
-              <span className="text-sm text-muted-foreground">
+              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
                 trên tổng {sortedAccounts.length} bản ghi
               </span>
             </div>
@@ -366,10 +375,11 @@ export default function AccountsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
+                className={isLightMode ? 'text-gray-900' : ''}
               >
                 Trước
               </Button>
-              <span className="text-sm">
+              <span className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
                 Trang {currentPage} / {totalPages}
               </span>
               <Button
@@ -377,6 +387,7 @@ export default function AccountsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
+                className={isLightMode ? 'text-gray-900' : ''}
               >
                 Sau
               </Button>
@@ -386,32 +397,32 @@ export default function AccountsPage() {
       </Card>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-zinc-800 border-zinc-700" style={{ maxWidth: '90vw', width: '90vw' }}>
+        <DialogContent className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800 border-zinc-700'} style={{ maxWidth: '90vw', width: '90vw' }}>
           <DialogHeader>
-            <DialogTitle className="text-3xl font-bold">Chi tiết tài khoản</DialogTitle>
-            <DialogDescription className="text-base">
+            <DialogTitle className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Chi tiết tài khoản</DialogTitle>
+            <DialogDescription className={`text-base ${isLightMode ? 'text-gray-600' : 'text-gray-400'}`}>
               Thông tin chi tiết về tài khoản người dùng
             </DialogDescription>
           </DialogHeader>
           {selectedAccount && (
             <div className="grid grid-cols-3 gap-4 mt-2">
-              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+              <div className={`rounded-lg p-6 border ${isLightMode ? 'bg-gray-50 border-gray-200' : 'bg-zinc-900/50 border-zinc-700'}`}>
                 <h3 className="text-xl font-semibold mb-4 text-primary">Thông tin cơ bản</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Mã tài khoản</p>
-                    <p className="text-xl font-semibold">{selectedAccount.id}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Mã tài khoản</p>
+                    <p className={`text-xl font-semibold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{selectedAccount.id}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Tên tài khoản</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Tên tài khoản</p>
                     <p className="text-xl font-semibold text-blue-400">{selectedAccount.username}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Email đăng ký</p>
-                    <p className="text-lg">{selectedAccount.email}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Email đăng ký</p>
+                    <p className={`text-lg ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{selectedAccount.email}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Trạng thái</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Trạng thái</p>
                     <Badge variant={selectedAccount.status === "activated" ? "default" : "secondary"} className="text-sm px-3 py-1">
                       {selectedAccount.status === "activated" ? "Đã kích hoạt" : "Chưa kích hoạt"}
                     </Badge>
@@ -419,38 +430,38 @@ export default function AccountsPage() {
                 </div>
               </div>
 
-              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+              <div className={`rounded-lg p-6 border ${isLightMode ? 'bg-gray-50 border-gray-200' : 'bg-zinc-900/50 border-zinc-700'}`}>
                 <h3 className="text-xl font-semibold mb-4 text-primary">Thông tin cá nhân</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Họ và tên</p>
-                    <p className="text-lg font-medium">{selectedAccount.fullName}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Họ và tên</p>
+                    <p className={`text-lg font-medium ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{selectedAccount.fullName}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Ngày sinh</p>
-                    <p className="text-lg">{selectedAccount.birthDate}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Ngày sinh</p>
+                    <p className={`text-lg ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{selectedAccount.birthDate}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Số điện thoại</p>
-                    <p className="text-lg">{selectedAccount.phone}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Số điện thoại</p>
+                    <p className={`text-lg ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{selectedAccount.phone}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Ngày đăng ký</p>
-                    <p className="text-lg">{selectedAccount.registeredDate}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Ngày đăng ký</p>
+                    <p className={`text-lg ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{selectedAccount.registeredDate}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-zinc-900/50 rounded-lg p-6 border border-zinc-700">
+              <div className={`rounded-lg p-6 border ${isLightMode ? 'bg-gray-50 border-gray-200' : 'bg-zinc-900/50 border-zinc-700'}`}>
                 <h3 className="text-xl font-semibold mb-4 text-primary">Bảo mật</h3>
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Câu hỏi bí mật</p>
-                    <p className="text-lg bg-zinc-800/80 rounded px-4 py-3 border border-zinc-700">{selectedAccount.secretQuestion}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Câu hỏi bí mật</p>
+                    <p className={`text-lg rounded px-4 py-3 border ${isLightMode ? 'bg-gray-100 border-gray-200 text-gray-900' : 'bg-zinc-800/80 border-zinc-700 text-white'}`}>{selectedAccount.secretQuestion}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-400">Câu trả lời</p>
-                    <p className="text-lg bg-zinc-800/80 rounded px-4 py-3 border border-zinc-700">{selectedAccount.secretAnswer}</p>
+                    <p className={`text-sm font-medium ${isLightMode ? 'text-gray-600' : 'text-zinc-400'}`}>Câu trả lời</p>
+                    <p className={`text-lg rounded px-4 py-3 border ${isLightMode ? 'bg-gray-100 border-gray-200 text-gray-900' : 'bg-zinc-800/80 border-zinc-700 text-white'}`}>{selectedAccount.secretAnswer}</p>
                   </div>
                 </div>
               </div>
