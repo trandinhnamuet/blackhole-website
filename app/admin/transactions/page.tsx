@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowUpDown, Eye, EyeOff } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff, Moon, Sun } from "lucide-react"
 
 const mockTransactions = [
   { id: "TXN20240115001", accountId: "ACC001", method: "Thẻ cào Viettel", amount: 100000, status: "success", receivedInfo: "Nhận 100,000 VNĐ - Tặng 10,000 VNĐ", timestamp: "2024-01-15 10:30:25" },
@@ -36,6 +36,7 @@ export default function TransactionsPage() {
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [hideData, setHideData] = useState(false)
+  const [isLightMode, setIsLightMode] = useState(false)
 
   const maskData = (data: string | number) => hideData ? "*".repeat(10) : data.toString()
 
@@ -83,19 +84,31 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900">
+    <div className={`min-h-screen ${isLightMode ? 'bg-gray-50' : 'bg-zinc-900'}`}>
       <div className="container mx-auto p-6 pt-24 space-y-6">
-      <h1 className="text-3xl font-bold">Tra Cứu Log Giao Dịch</h1>
+      <div className="flex justify-between items-center">
+        <h1 className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Tra Cứu Log Giao Dịch</h1>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={() => setIsLightMode(!isLightMode)}
+          className={isLightMode ? 'bg-white border-gray-300' : 'bg-zinc-800 border-zinc-700'}
+        >
+          {isLightMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+        </Button>
+      </div>
 
-      <Card className="bg-zinc-800/50 border-zinc-700">
+      <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader>
-          <CardTitle>Bộ lọc tìm kiếm</CardTitle>
-          <CardDescription>Tìm kiếm theo mã giao dịch, phương thức thanh toán hoặc mã tài khoản</CardDescription>
+          <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Bộ lọc tìm kiếm</CardTitle>
+          <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>Tìm kiếm theo mã giao dịch, phương thức thanh toán hoặc mã tài khoản</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="search">Mã giao dịch / Phương thức</Label>
+              <Label htmlFor="search" className={isLightMode ? 'text-gray-900' : ''}>
+                Mã giao dịch / Phương thức
+              </Label>
               <Input 
                 id="search"
                 placeholder="Nhập mã giao dịch hoặc phương thức..." 
@@ -104,7 +117,9 @@ export default function TransactionsPage() {
               />
             </div>
             <div>
-              <Label htmlFor="account">Lọc theo tài khoản</Label>
+              <Label htmlFor="account" className={isLightMode ? 'text-gray-900' : ''}>
+                Lọc theo tài khoản
+              </Label>
               <Input 
                 id="account"
                 placeholder="Nhập mã tài khoản..." 
@@ -116,15 +131,15 @@ export default function TransactionsPage() {
         </CardContent>
       </Card>
 
-      <Card className="bg-zinc-800/50 border-zinc-700">
+      <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>Danh sách giao dịch ({filteredTransactions.length})</CardTitle>
+            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Danh sách giao dịch ({filteredTransactions.length})</CardTitle>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setHideData(!hideData)}
-              className="gap-2"
+              className={`gap-2 ${isLightMode ? 'text-gray-900' : ''}`}
             >
               {hideData ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               {hideData ? "Hiện thông tin" : "Ẩn thông tin"}
@@ -137,33 +152,33 @@ export default function TransactionsPage() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[140px] pl-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("id")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("id")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Mã GD <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="w-[100px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("accountId")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("accountId")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Mã TK <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("method")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("method")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Phương thức TT <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="text-right w-[130px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("amount")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("amount")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Số tiền <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 <TableHead className="w-[130px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("status")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("status")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Trạng thái <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="w-[250px] px-4">Thông tin nhận</TableHead>
+                <TableHead className={`w-[250px] px-4 ${isLightMode ? 'text-gray-900' : ''}`}>Thông tin nhận</TableHead>
                 <TableHead className="w-[160px] pr-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("timestamp")} className="h-8 px-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("timestamp")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Thời gian <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
@@ -172,15 +187,15 @@ export default function TransactionsPage() {
             <TableBody>
               {currentTransactions.map((txn) => (
                 <TableRow key={txn.id}>
-                  <TableCell className="font-medium pl-6">{maskData(txn.id)}</TableCell>
-                  <TableCell className="px-4">{maskData(txn.accountId)}</TableCell>
-                  <TableCell className="px-4">{maskData(txn.method)}</TableCell>
-                  <TableCell className="text-right font-semibold px-4">
+                  <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.id)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.accountId)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.method)}</TableCell>
+                  <TableCell className={`text-right font-semibold px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
                     {hideData ? "**********" : txn.amount.toLocaleString('vi-VN') + " VNĐ"}
                   </TableCell>
                   <TableCell className="px-4">{hideData ? <Badge>**********</Badge> : getStatusBadge(txn.status)}</TableCell>
-                  <TableCell className="max-w-[250px] truncate px-4">{maskData(txn.receivedInfo)}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground pr-6">{maskData(txn.timestamp)}</TableCell>
+                  <TableCell className={`max-w-[250px] truncate px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.receivedInfo)}</TableCell>
+                  <TableCell className={`text-sm pr-6 ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>{maskData(txn.timestamp)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -188,7 +203,7 @@ export default function TransactionsPage() {
           </div>
           <div className="flex items-center justify-between p-4 border-t border-zinc-700">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Hiển thị</span>
+              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Hiển thị</span>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => {
                 setItemsPerPage(Number(value))
                 setCurrentPage(1)
@@ -203,7 +218,7 @@ export default function TransactionsPage() {
                   <SelectItem value="50">50</SelectItem>
                 </SelectContent>
               </Select>
-              <span className="text-sm text-muted-foreground">
+              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
                 trên tổng {sortedTransactions.length} bản ghi
               </span>
             </div>
@@ -213,10 +228,11 @@ export default function TransactionsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
+                className={isLightMode ? 'text-gray-900' : ''}
               >
                 Trước
               </Button>
-              <span className="text-sm">
+              <span className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
                 Trang {currentPage} / {totalPages}
               </span>
               <Button
@@ -224,6 +240,7 @@ export default function TransactionsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
+                className={isLightMode ? 'text-gray-900' : ''}
               >
                 Sau
               </Button>
