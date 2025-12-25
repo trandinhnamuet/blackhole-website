@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { LocaleProvider } from "@/lib/locale-context"
+import { AuthProvider } from "@/lib/auth-context"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import "./globals.css"
@@ -58,9 +59,11 @@ export default function RootLayout({
     <html lang="vi" className="dark">
       <body className="font-sans antialiased">
         <LocaleProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <AuthProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </AuthProvider>
         </LocaleProvider>
         <Analytics />
       </body>

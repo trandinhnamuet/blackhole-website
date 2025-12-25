@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { withAdminAuth, useAuth } from "@/lib/auth-context"
 import { 
   Users, 
   Wallet, 
@@ -59,8 +60,9 @@ const adminModules = [
   }
 ]
 
-export default function AdminDashboard() {
+function AdminDashboard() {
   const [isLightMode, setIsLightMode] = useState(false)
+  const { user } = useAuth()
 
   return (
     <div className={`min-h-screen ${isLightMode ? 'bg-gray-50' : 'bg-zinc-900'}`}>
@@ -72,7 +74,9 @@ export default function AdminDashboard() {
           </div>
           <div>
             <h1 className={`text-3xl font-bold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Trang Quản Trị</h1>
-            <p className={`${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Hệ thống quản lý BlackHole Game</p>
+            <p className={`${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
+              Xin chào, {user?.name || 'Admin'} - Hệ thống quản lý BlackHole Game
+            </p>
           </div>
         </div>
         <Button 
@@ -186,3 +190,5 @@ export default function AdminDashboard() {
     </div>
   )
 }
+
+export default withAdminAuth(AdminDashboard)

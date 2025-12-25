@@ -13,18 +13,38 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Logo } from "@/components/logo"
 import { Eye, EyeOff, Mail, Lock, Gamepad2 } from "lucide-react"
 import { useLocale } from "@/lib/locale-context"
+import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const { t, locale } = useLocale()
+  const { login, isAuthenticated } = useAuth()
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    router.push("/admin")
+    return null
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
     setIsLoading(true)
-    // Simulate login
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsLoading(false)
+    
+    try {
+      await login(email, password)
+      // Redirect handled by AuthContext
+    } catch (err: any) {
+      setError(err.message || "Login failed. Please check your credentials.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -62,6 +82,12 @@ export default function LoginPage() {
 
           <Card className="p-6 bg-card/50 border-border/50">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                  {error}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">{t.auth.email}</Label>
                 <div className="relative">
@@ -70,6 +96,8 @@ export default function LoginPage() {
                     id="email"
                     type="email"
                     placeholder="email@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     className="pl-10 bg-secondary/50 border-border/50"
                   />
@@ -83,6 +111,8 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                     className="pl-10 pr-10 bg-secondary/50 border-border/50"
                   />
