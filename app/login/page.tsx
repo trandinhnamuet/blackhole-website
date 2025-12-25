@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
@@ -27,10 +27,11 @@ export default function LoginPage() {
   const [error, setError] = useState("")
 
   // Redirect if already authenticated
-  if (isAuthenticated) {
-    router.push("/admin")
-    return null
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/admin")
+    }
+  }, [isAuthenticated, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
