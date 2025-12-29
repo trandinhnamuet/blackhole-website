@@ -33,7 +33,7 @@ export function WalletBalance({ userId }: WalletBalanceProps) {
       const token = localStorage.getItem('blackhole_access_token')
       if (!token) return
 
-      const response = await fetch('http://localhost:3012/wallet/balance', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/wallet/balance`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -78,7 +78,7 @@ export function WalletBalance({ userId }: WalletBalanceProps) {
         return
       }
 
-      const response = await fetch('http://localhost:3012/wallet/deposit', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/wallet/deposit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
