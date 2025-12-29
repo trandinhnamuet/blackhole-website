@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { withAuth, useAuth } from "@/lib/auth-context"
+import { WalletBalance } from "@/components/wallet-balance"
 import { 
   User,
   Trophy,
@@ -105,6 +106,9 @@ function UserDashboard() {
             <Bell className="h-5 w-5" />
           </Button>
         </div>
+
+        {/* Wallet Balance */}
+        <WalletBalance />
 
         {/* Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
