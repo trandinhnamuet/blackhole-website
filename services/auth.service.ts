@@ -48,6 +48,25 @@ class AuthService {
     return data;
   }
 
+  async register(email: string, password: string, name: string): Promise<{ message: string; user: User }> {
+    const response = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ email, password, name }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Registration failed' }));
+      throw new Error(error.message || 'Registration failed');
+    }
+
+    const data = await response.json();
+    return data;
+  }
+
   async refresh(): Promise<string> {
     const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',

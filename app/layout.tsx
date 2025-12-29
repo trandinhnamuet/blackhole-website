@@ -6,6 +6,7 @@ import { LocaleProvider } from "@/lib/locale-context"
 import { AuthProvider } from "@/lib/auth-context"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -63,6 +64,7 @@ export default function RootLayout({
             <Header />
             <main>{children}</main>
             <Footer />
+            <Toaster />
           </AuthProvider>
         </LocaleProvider>
         <Analytics />

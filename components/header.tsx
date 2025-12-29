@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, ChevronDown, Globe, LogIn, LogOut, User } from "lucide-react"
+import { Menu, X, ChevronDown, Globe, LogIn, LogOut, User, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Logo } from "./logo"
@@ -90,7 +90,7 @@ export function Header() {
               </DropdownMenu>
 
               {/* User Menu or Login Button */}
-              <div className="hidden sm:flex items-center">
+              <div className="hidden sm:flex items-center gap-2">
                 {isAuthenticated && user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -129,15 +129,27 @@ export function Header() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <Link href="/login">
-                    <Button
-                      size="sm"
-                      className="gap-2 bg-gradient-to-r from-[oklch(0.65_0.25_300)] to-[oklch(0.7_0.2_200)] hover:opacity-90 text-white"
-                    >
-                      <LogIn className="h-4 w-4" />
-                      {t.nav.login}
-                    </Button>
-                  </Link>
+                  <>
+                    <Link href="/register">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-border/50 hover:bg-secondary/50"
+                      >
+                        <UserPlus className="h-4 w-4" />
+                        {t.auth.register}
+                      </Button>
+                    </Link>
+                    <Link href="/login">
+                      <Button
+                        size="sm"
+                        className="gap-2 bg-gradient-to-r from-[oklch(0.65_0.25_300)] to-[oklch(0.7_0.2_200)] hover:opacity-90 text-white"
+                      >
+                        <LogIn className="h-4 w-4" />
+                        {t.nav.login}
+                      </Button>
+                    </Link>
+                  </>
                 )}
               </div>
 
@@ -216,14 +228,25 @@ export function Header() {
                       </Button>
                     </div>
                   ) : (
-                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button
-                        className="w-full bg-gradient-to-r from-[oklch(0.65_0.25_300)] to-[oklch(0.7_0.2_200)] gap-2"
-                      >
-                        <LogIn className="h-4 w-4" />
-                        {t.nav.login}
-                      </Button>
-                    </Link>
+                    <div className="space-y-2">
+                      <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button
+                          variant="outline"
+                          className="w-full gap-2 border-border/50"
+                        >
+                          <UserPlus className="h-4 w-4" />
+                          {t.auth.register}
+                        </Button>
+                      </Link>
+                      <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button
+                          className="w-full bg-gradient-to-r from-[oklch(0.65_0.25_300)] to-[oklch(0.7_0.2_200)] gap-2"
+                        >
+                          <LogIn className="h-4 w-4" />
+                          {t.nav.login}
+                        </Button>
+                      </Link>
+                    </div>
                   )}
                 </div>
               </nav>

@@ -15,11 +15,13 @@ import { Eye, EyeOff, Mail, Lock, Gamepad2 } from "lucide-react"
 import { useLocale } from "@/lib/locale-context"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
   const { t, locale } = useLocale()
   const { login, isAuthenticated } = useAuth()
   const router = useRouter()
+  const { toast } = useToast()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
@@ -29,9 +31,14 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/admin")
+      toast({
+        variant: "success",
+        title: locale === "vi" ? "Bạn đã đăng nhập rồi" : "You are already logged in",
+        description: locale === "vi" ? "Chuyển về trang chủ" : "Redirecting to home page",
+      })
+      router.push("/")
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, router, toast, locale])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,6 +53,20 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Show loading spinner if redirecting
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">
+            {locale === "vi" ? "Đang chuyển hướng..." : "Redirecting..."}
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

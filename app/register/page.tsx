@@ -2,31 +2,105 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Logo } from "@/components/logo"
-import { Eye, EyeOff, Mail, Lock, User, Gamepad2 } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, User, Gamepad2, CheckCircle2, AlertCircle } from "lucide-react"
 import { useLocale } from "@/lib/locale-context"
+import { useAuth } from "@/lib/auth-context"
+import { useToast } from "@/hooks/use-toast"
+import { authService } from "@/services/auth.service"
 
 export default function RegisterPage() {
   const { t, locale } = useLocale()
+  const { isAuthenticated } = useAuth()
+  const { toast } = useToast()
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  })
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      toast({
+        variant: "success",
+        title: locale === "vi" ? "Bạn đã đăng nhập rồi" : "You are already logged in",
+        description: locale === "vi" ? "Chuyển về trang chủ" : "Redirecting to home page",
+      })
+      router.push("/")
+    }
+  }, [isAuthenticated, router, toast, locale])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+    setError("")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!agreedToTerms) return
+    setError("")
+    
+    if (!agreedToTerms) {
+      setError(locale === "vi" ? "Vui lòng đồng ý với điều khoản sử dụng" : "Please agree to the terms of service")
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError(locale === "vi" ? "Mật khẩu không khớp" : "Passwords do not match")
+      return
+    }
+
+    if (formData.password.length < 8) {
+      setError(locale === "vi" ? "Mật khẩu phải có ít nhất 8 ký tự" : "Password must be at least 8 characters long")
+      return
+    }
+
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsLoading(false)
+    try {
+      await authService.register(formData.email, formData.password, formData.name)
+      setSuccess(true)
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        router.push("/login")
+      }, 2000)
+    } catch (err: any) {
+      setError(err.message || (locale === "vi" ? "Đăng ký thất bại" : "Registration failed"))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Show loading spinner if redirecting
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">
+            {locale === "vi" ? "Đang chuyển hướng..." : "Redirecting..."}
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -43,125 +117,152 @@ export default function RegisterPage() {
           </div>
 
           <Card className="p-6 bg-card/50 border-border/50">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">{t.auth.username}</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="username"
-                    placeholder={locale === "vi" ? "Tên hiển thị" : "Display name"}
-                    required
-                    className="pl-10 bg-secondary/50 border-border/50"
-                  />
-                </div>
+            {success ? (
+              <div className="text-center py-8">
+                <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">
+                  {locale === "vi" ? "Đăng ký thành công!" : "Registration Successful!"}
+                </h3>
+                <p className="text-muted-foreground">
+                  {locale === "vi" ? "Đang chuyển đến trang đăng nhập..." : "Redirecting to login..."}
+                </p>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <p className="text-sm">{error}</p>
+                  </div>
+                )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email">{t.auth.email}</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="email@example.com"
-                    required
-                    className="pl-10 bg-secondary/50 border-border/50"
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="name">{t.auth.username}</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="name"
+                      placeholder={locale === "vi" ? "Tên hiển thị" : "Display name"}
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="pl-10 bg-secondary/50 border-border/50"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">{t.auth.password}</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    className="pl-10 pr-10 bg-secondary/50 border-border/50"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t.auth.email}</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="email@example.com"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="pl-10 bg-secondary/50 border-border/50"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">{t.auth.confirmPassword}</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    required
-                    className="pl-10 pr-10 bg-secondary/50 border-border/50"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+                <div className="space-y-2">
+                  <Label htmlFor="password">{t.auth.password}</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="pl-10 pr-10 bg-secondary/50 border-border/50"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-start space-x-2">
-                <Checkbox
-                  id="terms"
-                  checked={agreedToTerms}
-                  onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                />
-                <Label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
-                  {locale === "vi" ? (
-                    <>
-                      Tôi đồng ý với{" "}
-                      <Link href="/terms" className="text-primary hover:underline">
-                        Điều khoản sử dụng
-                      </Link>{" "}
-                      và{" "}
-                      <Link href="/privacy" className="text-primary hover:underline">
-                        Chính sách bảo mật
-                      </Link>
-                    </>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">{t.auth.confirmPassword}</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      required
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="pl-10 pr-10 bg-secondary/50 border-border/50"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={agreedToTerms}
+                    onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                  />
+                  <Label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
+                    {locale === "vi" ? (
+                      <>
+                        Tôi đồng ý với{" "}
+                        <Link href="/terms" className="text-primary hover:underline">
+                          Điều khoản sử dụng
+                        </Link>{" "}
+                        và{" "}
+                        <Link href="/privacy" className="text-primary hover:underline">
+                          Chính sách bảo mật
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        I agree to the{" "}
+                        <Link href="/terms" className="text-primary hover:underline">
+                          Terms of Service
+                        </Link>{" "}
+                        and{" "}
+                        <Link href="/privacy" className="text-primary hover:underline">
+                          Privacy Policy
+                        </Link>
+                      </>
+                    )}
+                  </Label>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-primary to-accent"
+                  disabled={isLoading || !agreedToTerms}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                      {t.common.loading}
+                    </div>
                   ) : (
                     <>
-                      I agree to the{" "}
-                      <Link href="/terms" className="text-primary hover:underline">
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/privacy" className="text-primary hover:underline">
-                        Privacy Policy
-                      </Link>
+                      <Gamepad2 className="h-4 w-4 mr-2" />
+                      {t.auth.register}
                     </>
                   )}
-                </Label>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-primary to-accent"
-                disabled={isLoading || !agreedToTerms}
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    {t.common.loading}
-                  </div>
-                ) : (
-                  <>
-                    <Gamepad2 className="h-4 w-4 mr-2" />
-                    {t.auth.register}
-                  </>
-                )}
-              </Button>
-            </form>
+                </Button>
+              </form>
+            )}
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
