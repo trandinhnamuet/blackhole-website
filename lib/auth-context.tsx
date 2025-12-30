@@ -21,6 +21,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
+  // Handle auto-logout when refresh token fails
+  const handleAutoLogout = useCallback(() => {
+    setUser(null)
+    authService.clearAccessToken()
+    router.push("/login")
+  }, [router])
+
+  // Set logout callback in auth service
+  useEffect(() => {
+    authService.setOnLogoutCallback(handleAutoLogout)
+  }, [handleAutoLogout])
+
   // Auto-refresh token every 14 minutes (before 15min expiration)
   useEffect(() => {
     if (!user) return
@@ -30,13 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await authService.refresh()
       } catch (error) {
         console.error("Auto-refresh failed:", error)
-        setUser(null)
-        authService.clearAccessToken()
+        handleAutoLogout()
       }
     }, 14 * 60 * 1000) // 14 minutes
 
     return () => clearInterval(interval)
-  }, [user])
+  }, [user, handleAutoLogout])
 
   // Check authentication on mount
   useEffect(() => {
