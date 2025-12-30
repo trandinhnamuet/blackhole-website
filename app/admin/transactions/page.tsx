@@ -44,7 +44,7 @@ function TransactionsPage() {
     totalPages: 0
   })
   const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
@@ -71,7 +71,7 @@ function TransactionsPage() {
       })
       
       if (search) params.append('search', search)
-      if (statusFilter) params.append('status', statusFilter)
+      if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter)
 
       const response = await fetch(`${API_URL}/wallet/admin/payments?${params}`, {
         method: 'GET',
@@ -192,7 +192,7 @@ function TransactionsPage() {
                   <SelectValue placeholder="Tất cả" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tất cả</SelectItem>
+                  <SelectItem value="all">Tất cả</SelectItem>
                   <SelectItem value="ORDER_SUCCESS">Thành công</SelectItem>
                   <SelectItem value="PROCESSING">Đang xử lý</SelectItem>
                   <SelectItem value="PENDING">Chờ thanh toán</SelectItem>

@@ -136,7 +136,7 @@ function PaymentCallbackContent() {
               {paymentInfo.merchantOrderId && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Mã đơn:</span>
-                  <span className="font-mono text-xs">{paymentInfo.merchantOrderId.substring(0, 20)}...</span>
+                  <span className="font-mono text-xs break-all">{paymentInfo.merchantOrderId}</span>
                 </div>
               )}
             </div>
