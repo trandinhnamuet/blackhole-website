@@ -49,20 +49,28 @@ function PaymentCallbackContent() {
         if (billId) queryParams.append('gpay_bill_id', billId)
 
         const response = await fetch(`${API_URL}/wallet/payment-status?${queryParams}`, {
+          method: 'GET',
           credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         })
 
         if (!response.ok) {
-          throw new Error('Không thể kiểm tra trạng thái thanh toán')
+          const errorData = await response.json().catch(() => ({}))
+          console.error('Payment status check failed:', response.status, errorData)
+          throw new Error(errorData.message || 'Không thể kiểm tra trạng thái thanh toán')
         }
 
         const data = await response.json()
+        console.log('Payment status:', data)
         setPaymentInfo(data)
 
         if (data.status === 'ORDER_SUCCESS') {
           setStatus('success')
         } else if (data.status === 'ORDER_FAILED' || data.status === 'FAILED') {
           setStatus('failed')
+          setError('Giao dịch không thành công')
         } else {
           // Still processing
           setStatus('loading')
@@ -71,7 +79,7 @@ function PaymentCallbackContent() {
         }
       } catch (err: any) {
         console.error('Error checking payment status:', err)
-        setError(err.message || 'Có lỗi xảy ra')
+        setError(err.message || 'Có lỗi xảy ra khi kiểm tra trạng thái thanh toán')
         setStatus('failed')
       }
     }
