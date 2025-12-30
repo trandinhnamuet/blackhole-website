@@ -16,7 +16,8 @@ import {
   Bell,
   Gift,
   Calendar,
-  Award
+  Award,
+  Receipt
 } from "lucide-react"
 
 function UserDashboard() {
@@ -54,6 +55,13 @@ function UserDashboard() {
   ]
 
   const quickActions = [
+    {
+      title: "Lịch Sử Nạp Tiền",
+      description: "Xem lại giao dịch nạp tiền",
+      href: "/user/transaction-history",
+      icon: Receipt,
+      color: "text-blue-500"
+    },
     {
       title: "Game Library",
       description: "Xem các game đang chơi",

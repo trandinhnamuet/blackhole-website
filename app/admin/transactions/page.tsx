@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -8,35 +8,93 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowUpDown, Eye, EyeOff, Moon, Sun } from "lucide-react"
+import { ArrowUpDown, Eye, EyeOff, Moon, Sun, Loader2 } from "lucide-react"
+import { withAdminAuth } from "@/lib/auth-context"
 
-const mockTransactions = [
-  { id: "TXN20240115001", accountId: "ACC001", method: "Thẻ cào Viettel", amount: 100000, status: "success", receivedInfo: "Nhận 100,000 VNĐ - Tặng 10,000 VNĐ", timestamp: "2024-01-15 10:30:25" },
-  { id: "TXN20240115002", accountId: "ACC001", method: "Chuyển khoản ngân hàng", amount: 500000, status: "success", receivedInfo: "Nhận 500,000 VNĐ - Tặng 75,000 VNĐ", timestamp: "2024-01-15 14:20:10" },
-  { id: "TXN20240210001", accountId: "ACC002", method: "Ví MoMo", amount: 200000, status: "pending", receivedInfo: "Đang xử lý...", timestamp: "2024-02-10 09:15:30" },
-  { id: "TXN20240210002", accountId: "ACC002", method: "Thẻ cào Vinaphone", amount: 50000, status: "failed", receivedInfo: "Thẻ không hợp lệ", timestamp: "2024-02-10 16:45:55" },
-  { id: "TXN20240305001", accountId: "ACC003", method: "Chuyển khoản ngân hàng", amount: 1000000, status: "success", receivedInfo: "Nhận 1,000,000 VNĐ - Tặng 200,000 VNĐ", timestamp: "2024-03-05 11:20:45" },
-  { id: "TXN20240312001", accountId: "ACC004", method: "Thẻ cào Mobifone", amount: 300000, status: "success", receivedInfo: "Nhận 300,000 VNĐ - Tặng 45,000 VNĐ", timestamp: "2024-03-12 15:10:12" },
-  { id: "TXN20240418001", accountId: "ACC005", method: "Ví ZaloPay", amount: 150000, status: "success", receivedInfo: "Nhận 150,000 VNĐ - Tặng 20,000 VNĐ", timestamp: "2024-04-18 08:25:33" },
-  { id: "TXN20240522001", accountId: "ACC006", method: "Chuyển khoản ngân hàng", amount: 800000, status: "success", receivedInfo: "Nhận 800,000 VNĐ - Tặng 150,000 VNĐ", timestamp: "2024-05-22 12:40:18" },
-  { id: "TXN20240630001", accountId: "ACC007", method: "Thẻ cào Viettel", amount: 100000, status: "pending", receivedInfo: "Đang xử lý...", timestamp: "2024-06-30 17:55:42" },
-  { id: "TXN20240714001", accountId: "ACC008", method: "Ví MoMo", amount: 400000, status: "success", receivedInfo: "Nhận 400,000 VNĐ - Tặng 60,000 VNĐ", timestamp: "2024-07-14 09:30:27" },
-  { id: "TXN20240825001", accountId: "ACC009", method: "Chuyển khoản ngân hàng", amount: 600000, status: "success", receivedInfo: "Nhận 600,000 VNĐ - Tặng 100,000 VNĐ", timestamp: "2024-08-25 14:15:55" },
-  { id: "TXN20240911001", accountId: "ACC010", method: "Thẻ cào Vinaphone", amount: 200000, status: "failed", receivedInfo: "Mã thẻ sai", timestamp: "2024-09-11 11:22:08" },
-  { id: "TXN20241005001", accountId: "ACC011", method: "Ví ZaloPay", amount: 350000, status: "success", receivedInfo: "Nhận 350,000 VNĐ - Tặng 50,000 VNĐ", timestamp: "2024-10-05 16:48:31" },
-  { id: "TXN20241020001", accountId: "ACC012", method: "Chuyển khoản ngân hàng", amount: 250000, status: "success", receivedInfo: "Nhận 250,000 VNĐ - Tặng 35,000 VNĐ", timestamp: "2024-10-20 10:05:19" },
-  { id: "TXN20241108001", accountId: "ACC013", method: "Thẻ cào Mobifone", amount: 500000, status: "success", receivedInfo: "Nhận 500,000 VNĐ - Tặng 75,000 VNĐ", timestamp: "2024-11-08 13:38:44" }
-]
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3012';
 
-export default function TransactionsPage() {
+interface Payment {
+  id: number;
+  merchantOrderId: string;
+  gpayBillId: string;
+  gpayTransId: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  amount: number;
+  status: string;
+  paymentMethod: string;
+  createdAt: string;
+  callbackReceivedAt: string;
+}
+
+interface PaginationInfo {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+function TransactionsPage() {
+  const [payments, setPayments] = useState<Payment[]>([])
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0
+  })
   const [search, setSearch] = useState("")
-  const [accountFilter, setAccountFilter] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [statusFilter, setStatusFilter] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
   const [sortColumn, setSortColumn] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [hideData, setHideData] = useState(false)
   const [isLightMode, setIsLightMode] = useState(false)
+
+  useEffect(() => {
+    fetchPayments()
+  }, [pagination.page, pagination.limit, search, statusFilter])
+
+  const fetchPayments = async () => {
+    try {
+      setIsLoading(true)
+      
+      const token = localStorage.getItem('blackhole_access_token')
+      if (!token) {
+        console.error('No access token')
+        return
+      }
+
+      const params = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+      })
+      
+      if (search) params.append('search', search)
+      if (statusFilter) params.append('status', statusFilter)
+
+      const response = await fetch(`${API_URL}/wallet/admin/payments?${params}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch payments')
+      }
+
+      const data = await response.json()
+      setPayments(data.data)
+      setPagination(data.pagination)
+    } catch (error) {
+      console.error('Error fetching payments:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const maskData = (data: string | number) => hideData ? "*".repeat(10) : data.toString()
 
@@ -49,14 +107,7 @@ export default function TransactionsPage() {
     }
   }
 
-  const filteredTransactions = mockTransactions.filter(txn => {
-    const matchSearch = txn.id.toLowerCase().includes(search.toLowerCase()) ||
-                       txn.method.toLowerCase().includes(search.toLowerCase())
-    const matchAccount = !accountFilter || txn.accountId === accountFilter
-    return matchSearch && matchAccount
-  })
-
-  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+  const sortedPayments = [...payments].sort((a, b) => {
     if (!sortColumn) return 0
     const aVal = a[sortColumn as keyof typeof a]
     const bVal = b[sortColumn as keyof typeof b]
@@ -65,22 +116,32 @@ export default function TransactionsPage() {
     return 0
   })
 
-  const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentTransactions = sortedTransactions.slice(startIndex, endIndex)
-
   const getStatusBadge = (status: string) => {
     switch(status) {
-      case "success":
+      case "ORDER_SUCCESS":
         return <Badge variant="default" className="bg-green-600">Thành công</Badge>
-      case "pending":
-        return <Badge variant="secondary">Đang xử lý</Badge>
-      case "failed":
+      case "PROCESSING":
+        return <Badge variant="secondary" className="bg-blue-600">Đang xử lý</Badge>
+      case "PENDING":
+        return <Badge variant="secondary">Chờ thanh toán</Badge>
+      case "ORDER_FAILED":
+      case "FAILED":
         return <Badge variant="destructive">Thất bại</Badge>
       default:
-        return <Badge>{status}</Badge>
+        return <Badge variant="outline">{status}</Badge>
     }
+  }
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A'
+    return new Date(dateString).toLocaleString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })
   }
 
   return (
@@ -101,31 +162,48 @@ export default function TransactionsPage() {
       <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader>
           <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Bộ lọc tìm kiếm</CardTitle>
-          <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>Tìm kiếm theo mã giao dịch, phương thức thanh toán hoặc mã tài khoản</CardDescription>
+          <CardDescription className={isLightMode ? 'text-gray-600' : 'text-gray-400'}>Tìm kiếm theo mã giao dịch, email người dùng</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <Label htmlFor="search" className={isLightMode ? 'text-gray-900' : ''}>
-                Mã giao dịch / Phương thức
+                Tìm kiếm
               </Label>
               <Input 
                 id="search"
-                placeholder="Nhập mã giao dịch hoặc phương thức..." 
+                placeholder="Mã đơn, email..." 
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setPagination(prev => ({ ...prev, page: 1 }))
+                }}
               />
             </div>
             <div>
-              <Label htmlFor="account" className={isLightMode ? 'text-gray-900' : ''}>
-                Lọc theo tài khoản
+              <Label htmlFor="status" className={isLightMode ? 'text-gray-900' : ''}>
+                Trạng thái
               </Label>
-              <Input 
-                id="account"
-                placeholder="Nhập mã tài khoản..." 
-                value={accountFilter}
-                onChange={(e) => setAccountFilter(e.target.value)}
-              />
+              <Select value={statusFilter} onValueChange={(value) => {
+                setStatusFilter(value)
+                setPagination(prev => ({ ...prev, page: 1 }))
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Tất cả" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Tất cả</SelectItem>
+                  <SelectItem value="ORDER_SUCCESS">Thành công</SelectItem>
+                  <SelectItem value="PROCESSING">Đang xử lý</SelectItem>
+                  <SelectItem value="PENDING">Chờ thanh toán</SelectItem>
+                  <SelectItem value="ORDER_FAILED">Thất bại</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-end">
+              <Button onClick={fetchPayments} className="w-full">
+                Tìm kiếm
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -134,7 +212,9 @@ export default function TransactionsPage() {
       <Card className={isLightMode ? 'bg-white border-gray-200' : 'bg-zinc-800/50 border-zinc-700'}>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>Danh sách giao dịch ({filteredTransactions.length})</CardTitle>
+            <CardTitle className={isLightMode ? 'text-gray-900' : 'text-white'}>
+              Danh sách giao dịch ({pagination.total})
+            </CardTitle>
             <Button
               variant="outline"
               size="sm"
@@ -147,108 +227,120 @@ export default function TransactionsPage() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[140px] pl-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("id")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
-                    Mã GD <ArrowUpDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead className="w-[100px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("accountId")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
-                    Mã TK <ArrowUpDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead className="px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("method")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
-                    Phương thức TT <ArrowUpDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead className="text-right w-[130px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("amount")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
-                    Số tiền <ArrowUpDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead className="w-[130px] px-4">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("status")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
-                    Trạng thái <ArrowUpDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead className={`w-[250px] px-4 ${isLightMode ? 'text-gray-900' : ''}`}>Thông tin nhận</TableHead>
-                <TableHead className="w-[160px] pr-6">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("timestamp")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
-                    Thời gian <ArrowUpDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentTransactions.map((txn) => (
-                <TableRow key={txn.id}>
-                  <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.id)}</TableCell>
-                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.accountId)}</TableCell>
-                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.method)}</TableCell>
-                  <TableCell className={`text-right font-semibold px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
-                    {hideData ? "**********" : txn.amount.toLocaleString('vi-VN') + " VNĐ"}
-                  </TableCell>
-                  <TableCell className="px-4">{hideData ? <Badge>**********</Badge> : getStatusBadge(txn.status)}</TableCell>
-                  <TableCell className={`max-w-[250px] truncate px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(txn.receivedInfo)}</TableCell>
-                  <TableCell className={`text-sm pr-6 ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>{maskData(txn.timestamp)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          </div>
-          <div className="flex items-center justify-between p-4 border-t border-zinc-700">
-            <div className="flex items-center gap-2">
-              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Hiển thị</span>
-              <Select value={itemsPerPage.toString()} onValueChange={(value) => {
-                setItemsPerPage(Number(value))
-                setCurrentPage(1)
-              }}>
-                <SelectTrigger className="w-[70px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
-                trên tổng {sortedTransactions.length} bản ghi
-              </span>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className={isLightMode ? 'text-gray-900' : ''}
-              >
-                Trước
-              </Button>
-              <span className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
-                Trang {currentPage} / {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className={isLightMode ? 'text-gray-900' : ''}
-              >
-                Sau
-              </Button>
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="w-[100px] pl-6">ID</TableHead>
+                      <TableHead className="w-[180px]">Mã đơn hàng</TableHead>
+                      <TableHead className="w-[200px]">Email / Tên</TableHead>
+                      <TableHead className="text-right w-[130px]">Số tiền</TableHead>
+                      <TableHead className="w-[130px]">Trạng thái</TableHead>
+                      <TableHead className="w-[150px]">Phương thức</TableHead>
+                      <TableHead className="w-[160px]">Thời gian tạo</TableHead>
+                      <TableHead className="w-[160px] pr-6">Hoàn thành</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedPayments.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                          Không có dữ liệu
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      sortedPayments.map((payment) => (
+                        <TableRow key={payment.id}>
+                          <TableCell className={`font-medium pl-6 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
+                            {hideData ? "***" : payment.id}
+                          </TableCell>
+                          <TableCell className={`font-mono text-xs ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
+                            {hideData ? "**********" : payment.merchantOrderId.substring(0, 25) + '...'}
+                          </TableCell>
+                          <TableCell className={`${isLightMode ? 'text-gray-900' : 'text-white'}`}>
+                            <div className="space-y-1">
+                              <div className="text-sm">{hideData ? "**********" : payment.userEmail}</div>
+                              <div className="text-xs text-muted-foreground">{hideData ? "**********" : payment.userName}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell className={`text-right font-semibold ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
+                            {hideData ? "**********" : Number(payment.amount).toLocaleString('vi-VN') + " VND"}
+                          </TableCell>
+                          <TableCell>
+                            {hideData ? <Badge>**********</Badge> : getStatusBadge(payment.status)}
+                          </TableCell>
+                          <TableCell className={`${isLightMode ? 'text-gray-900' : 'text-white'}`}>
+                            {hideData ? "**********" : (payment.paymentMethod || 'N/A')}
+                          </TableCell>
+                          <TableCell className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
+                            {hideData ? "**********" : formatDate(payment.createdAt)}
+                          </TableCell>
+                          <TableCell className={`text-sm pr-6 ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
+                            {hideData ? "**********" : formatDate(payment.callbackReceivedAt)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="flex items-center justify-between p-4 border-t border-zinc-700">
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>Hiển thị</span>
+                  <Select value={pagination.limit.toString()} onValueChange={(value) => {
+                    setPagination(prev => ({ ...prev, limit: Number(value), page: 1 }))
+                  }}>
+                    <SelectTrigger className="w-[70px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="20">20</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                      <SelectItem value="100">100</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className={`text-sm ${isLightMode ? 'text-gray-600' : 'text-muted-foreground'}`}>
+                    trên tổng {pagination.total} bản ghi
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                    disabled={pagination.page === 1}
+                    className={isLightMode ? 'text-gray-900' : ''}
+                  >
+                    Trước
+                  </Button>
+                  <span className={`text-sm ${isLightMode ? 'text-gray-900' : 'text-white'}`}>
+                    Trang {pagination.page} / {pagination.totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.totalPages, prev.page + 1) }))}
+                    disabled={pagination.page === pagination.totalPages}
+                    className={isLightMode ? 'text-gray-900' : ''}
+                  >
+                    Sau
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
       </div>
     </div>
   )
 }
+
+export default withAdminAuth(TransactionsPage)
