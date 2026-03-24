@@ -35,7 +35,10 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    birthDate: "",
   })
+
+  const [birthDateWarning, setBirthDateWarning] = useState("")
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -54,6 +57,37 @@ export default function RegisterPage() {
     setError("")
   }
 
+  const calculateAge = (dateString: string) => {
+    if (!dateString) return null
+    const today = new Date()
+    const birth = new Date(dateString)
+    let age = today.getFullYear() - birth.getFullYear()
+    const m = today.getMonth() - birth.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--
+    }
+    return age
+  }
+
+  const validateBirthDate = (value?: string) => {
+    const dob = value ?? formData.birthDate
+    const age = calculateAge(dob)
+    if (age === null) {
+      setBirthDateWarning("")
+      return false
+    }
+    if (age < 16) {
+      setBirthDateWarning(
+        locale === "vi"
+          ? "Người chơi dưới 16 tuổi thì cha, mẹ hoặc người giám hộ theo pháp luật dân sự đăng ký tài khoản bằng thông tin của cha, mẹ hoặc người giám hộ theo pháp luật dân sự"
+          : "For players under 16, a parent or legal guardian must register using their own information and accept responsibility."
+      )
+      return false
+    }
+    setBirthDateWarning("")
+    return true
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -70,6 +104,34 @@ export default function RegisterPage() {
 
     if (formData.password.length < 8) {
       setError(locale === "vi" ? "Mật khẩu phải có ít nhất 8 ký tự" : "Password must be at least 8 characters long")
+      return
+    }
+
+    // Validate birth date presence and age
+    if (!formData.birthDate) {
+      setError(locale === "vi" ? "Vui lòng nhập ngày sinh" : "Please enter your date of birth")
+      return
+    }
+
+    const age = calculateAge(formData.birthDate)
+    if (age === null) {
+      setError(locale === "vi" ? "Ngày sinh không hợp lệ" : "Invalid date of birth")
+      return
+    }
+
+    // Example: if a specific game requires 18+, block registration when under 18.
+    const gameRequires18 = false
+    if (gameRequires18 && age < 18) {
+      setError(locale === "vi" ? "Bạn chưa đủ 18 tuổi" : "You are not old enough (18+)")
+      return
+    }
+
+    if (age < 16) {
+      setBirthDateWarning(
+        locale === "vi"
+          ? "Người chơi dưới 16 tuổi thì cha, mẹ hoặc người giám hộ theo pháp luật dân sự đăng ký tài khoản bằng thông tin của cha, mẹ hoặc người giám hộ theo pháp luật dân sự"
+          : "For players under 16, a parent or legal guardian must register using their own information and accept responsibility."
+      )
       return
     }
 
@@ -163,6 +225,26 @@ export default function RegisterPage() {
                       value={formData.email}
                       onChange={handleChange}
                       className="pl-10 bg-secondary/50 border-border/50"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="birthDate">{locale === 'vi' ? 'Ngày sinh' : 'Date of birth'}</Label>
+                  {birthDateWarning && (
+                    <div className="text-sm text-red-500 mb-1">
+                      {birthDateWarning}
+                    </div>
+                  )}
+                  <div className="relative">
+                    <Input
+                      id="birthDate"
+                      type="date"
+                      required
+                      value={formData.birthDate}
+                      onChange={handleChange}
+                      onBlur={(e) => validateBirthDate(e.target.value)}
+                      className="pl-3 bg-secondary/50 border-border/50"
                     />
                   </div>
                 </div>
