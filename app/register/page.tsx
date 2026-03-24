@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Logo } from "@/components/logo"
 import { Eye, EyeOff, Mail, Lock, User, Gamepad2, CheckCircle2, AlertCircle } from "lucide-react"
 import { useLocale } from "@/lib/locale-context"
+import { useTheme } from "next-themes"
 import { useAuth } from "@/lib/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { authService } from "@/services/auth.service"
@@ -21,6 +22,7 @@ import { authService } from "@/services/auth.service"
 export default function RegisterPage() {
   const { t, locale } = useLocale()
   const { isAuthenticated } = useAuth()
+  const { theme, setTheme } = useTheme()
   const { toast } = useToast()
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
@@ -53,6 +55,18 @@ export default function RegisterPage() {
       router.push("/")
     }
   }, [isAuthenticated, router, toast, locale])
+
+  // Ensure register page defaults to light theme unless user already selected a theme
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('theme')
+      if (!stored) {
+        setTheme('light')
+      }
+    } catch (e) {
+      // ignore (SSR safety)
+    }
+  }, [setTheme])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
