@@ -305,6 +305,16 @@ export default function AccountsPage() {
                   </Button>
                 </TableHead>
                 <TableHead className="px-4">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("birthDate")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
+                    Ngày sinh <ArrowUpDown className="ml-1 h-3 w-3" />
+                  </Button>
+                </TableHead>
+                <TableHead className="px-4">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("phone")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
+                    Số điện thoại <ArrowUpDown className="ml-1 h-3 w-3" />
+                  </Button>
+                </TableHead>
+                <TableHead className="px-4">
                   <Button variant="ghost" size="sm" onClick={() => handleSort("registeredDate")} className={`h-8 px-2 ${isLightMode ? 'text-gray-900' : ''}`}>
                     Ngày đăng ký <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
@@ -324,6 +334,8 @@ export default function AccountsPage() {
                   <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.username)}</TableCell>
                   <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.email)}</TableCell>
                   <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.fullName)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.birthDate)}</TableCell>
+                  <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.phone)}</TableCell>
                   <TableCell className={`px-4 ${isLightMode ? 'text-gray-900' : 'text-white'}`}>{maskData(account.registeredDate)}</TableCell>
                   <TableCell className="px-4">
                     <Badge variant={account.status === "activated" ? "default" : "secondary"}>
