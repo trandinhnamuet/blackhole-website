@@ -35,7 +35,9 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    birthDate: "",
+    birthDay: "",
+    birthMonth: "",
+    birthYear: "",
   })
 
   const [birthDateWarning, setBirthDateWarning] = useState("")
@@ -57,23 +59,34 @@ export default function RegisterPage() {
     setError("")
   }
 
-  const calculateAge = (dateString: string) => {
-    if (!dateString) return null
+  const calculateAgeFromParts = (day: string, month: string, year: string) => {
+    if (!day || !month || !year) return null
+    const d = Number(day)
+    const m = Number(month) - 1
+    const y = Number(year)
+    if (!Number.isFinite(d) || !Number.isFinite(m) || !Number.isFinite(y)) return null
+    const birth = new Date(y, m, d)
+    if (isNaN(birth.getTime())) return null
     const today = new Date()
-    const birth = new Date(dateString)
     let age = today.getFullYear() - birth.getFullYear()
-    const m = today.getMonth() - birth.getMonth()
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    const mm = today.getMonth() - birth.getMonth()
+    if (mm < 0 || (mm === 0 && today.getDate() < birth.getDate())) {
       age--
     }
     return age
   }
 
-  const validateBirthDate = (value?: string) => {
-    const dob = value ?? formData.birthDate
-    const age = calculateAge(dob)
-    if (age === null) {
+  const validateBirthDateParts = (day?: string, month?: string, year?: string) => {
+    const d = day ?? formData.birthDay
+    const m = month ?? formData.birthMonth
+    const y = year ?? formData.birthYear
+    if (!d || !m || !y) {
       setBirthDateWarning("")
+      return false
+    }
+    const age = calculateAgeFromParts(d, m, y)
+    if (age === null) {
+      setBirthDateWarning(locale === "vi" ? "Ngày sinh không hợp lệ" : "Invalid date of birth")
       return false
     }
     if (age < 16) {
@@ -108,18 +121,18 @@ export default function RegisterPage() {
     }
 
     // Validate birth date presence and age
-    if (!formData.birthDate) {
+    // Validate birth date presence and age using day/month/year inputs
+    if (!formData.birthDay || !formData.birthMonth || !formData.birthYear) {
       setError(locale === "vi" ? "Vui lòng nhập ngày sinh" : "Please enter your date of birth")
       return
     }
 
-    const age = calculateAge(formData.birthDate)
+    const age = calculateAgeFromParts(formData.birthDay, formData.birthMonth, formData.birthYear)
     if (age === null) {
       setError(locale === "vi" ? "Ngày sinh không hợp lệ" : "Invalid date of birth")
       return
     }
 
-    // Example: if a specific game requires 18+, block registration when under 18.
     const gameRequires18 = false
     if (gameRequires18 && age < 18) {
       setError(locale === "vi" ? "Bạn chưa đủ 18 tuổi" : "You are not old enough (18+)")
@@ -230,21 +243,39 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="birthDate">{locale === 'vi' ? 'Ngày sinh' : 'Date of birth'}</Label>
+                  <Label htmlFor="birthDay">{locale === 'vi' ? 'Ngày sinh' : 'Date of birth'}</Label>
                   {birthDateWarning && (
                     <div className="text-sm text-red-500 mb-1">
                       {birthDateWarning}
                     </div>
                   )}
-                  <div className="relative">
+                  <div className="flex gap-3">
                     <Input
-                      id="birthDate"
-                      type="date"
+                      id="birthDay"
+                      placeholder={locale === 'vi' ? 'Ngày' : 'Day'}
                       required
-                      value={formData.birthDate}
+                      value={formData.birthDay}
                       onChange={handleChange}
-                      onBlur={(e) => validateBirthDate(e.target.value)}
-                      className="pl-3 bg-secondary/50 border-border/50"
+                      onBlur={(e) => validateBirthDateParts(e.target.value, formData.birthMonth, formData.birthYear)}
+                      className="w-1/3 bg-secondary/50 border-border/50"
+                    />
+                    <Input
+                      id="birthMonth"
+                      placeholder={locale === 'vi' ? 'Tháng' : 'Month'}
+                      required
+                      value={formData.birthMonth}
+                      onChange={handleChange}
+                      onBlur={(e) => validateBirthDateParts(formData.birthDay, e.target.value, formData.birthYear)}
+                      className="w-1/3 bg-secondary/50 border-border/50"
+                    />
+                    <Input
+                      id="birthYear"
+                      placeholder={locale === 'vi' ? 'Năm' : 'Year'}
+                      required
+                      value={formData.birthYear}
+                      onChange={handleChange}
+                      onBlur={(e) => validateBirthDateParts(formData.birthDay, formData.birthMonth, e.target.value)}
+                      className="w-1/3 bg-secondary/50 border-border/50"
                     />
                   </div>
                 </div>

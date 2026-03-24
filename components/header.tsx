@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, ChevronDown, Globe, LogIn, LogOut, User, UserPlus } from "lucide-react"
+import { Menu, X, ChevronDown, Globe, LogIn, LogOut, User, UserPlus, Sun, Moon } from "lucide-react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Logo } from "./logo"
@@ -17,6 +18,8 @@ export function Header() {
   const pathname = usePathname()
   const { locale, setLocale, t } = useLocale()
   const { user, isAuthenticated, logout } = useAuth()
+  const { theme, setTheme, resolvedTheme } = useTheme()
+  const isDark = theme === "dark" || (theme === "system" && resolvedTheme === "dark")
 
   useEffect(() => {
     const handleScroll = () => {
@@ -88,6 +91,17 @@ export function Header() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Theme Toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+                className="gap-2"
+                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
 
               {/* User Menu or Login Button */}
               <div className="hidden sm:flex items-center gap-2">

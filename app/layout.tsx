@@ -7,6 +7,7 @@ import { AuthProvider } from "@/lib/auth-context"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Toaster } from "@/components/ui/toaster"
+import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -57,17 +58,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi" className="dark">
+    <html lang="vi">
       <body className="font-sans antialiased">
-        <LocaleProvider>
-          <AuthProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <Toaster />
-          </AuthProvider>
-        </LocaleProvider>
-        <Analytics />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <LocaleProvider>
+            <AuthProvider>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+              <Toaster />
+            </AuthProvider>
+          </LocaleProvider>
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   )
